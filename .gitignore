@@ -1,0 +1,5 @@
+/src/*.o
+/src/raxml/*.o
+/src/rasbhari/*.o
+/bin/multi-SpaM
+outtree

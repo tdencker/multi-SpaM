@@ -40,8 +40,6 @@ In general, the parameters don't have to be changed. Only the number of threads,
 
 # Additional Resources
 
-=======
-
 The program itself can then be used via the python script `multispam.py`. Example usage:
 
 	$ python multispam.py -t <number of threads> -i <input file> -o <output file>

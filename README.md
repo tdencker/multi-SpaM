@@ -21,7 +21,7 @@ where the input file is a FASTA file containing multiple genomes. The output fil
 # Options
 
 | Option          | Description |
-| --- | --- |
+| :--- | :--- |
 | -i              | Input file in FASTA format |
 | -o              | Output file in newick format
 | -k / -w         | Weight of the pattern (i.e. the number of matching positions) [ can't be larger than 16 ] |
@@ -32,7 +32,11 @@ where the input file is a FASTA file containing multiple genomes. The output fil
 
 
 **Tips:**
-In general, the parameters don't have to be changed. Only the number of threads, input and output need to be specified. If the resulting trees seem unreasonable, you can try lowering the number of don't care positions to 50. In case of large input files, it is recommended to increase the weight to 12 or even higher. Also, if you have rather limited RAM, you can use the memory save mode. For input files larger than 200 mb or so, the required RAM will exceed 8 gb. With the memory saving mode, the RAM requirement could be reduced to 10.5 gb for a 4.8 gb dataset (doubling the runtime). The number of sampled blocks doesn't have to be increased unless (potentially) for very large datasets.
+- In general, the parameters don't have to be changed. Only the number of threads, input and output need to be specified. 
+- If the resulting trees seem unreasonable, you can try lowering the number of don't care positions to 50. 
+- In case of large input files, it is recommended to increase the weight to 12 or even higher. 
+- Also, if you have rather limited RAM, you can use the memory save mode. For input files larger than 200 mb or so, the required RAM will exceed 8 gb. With the memory saving mode, the RAM requirement could be reduced to 10.5 gb for a 4.8 gb dataset (doubling the runtime). 
+- The number of sampled blocks doesn't have to be increased unless (potentially) for very large datasets.
 
 ## Additional Resources
 

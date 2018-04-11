@@ -433,11 +433,8 @@ inline std::vector<Pattern> getPatternSet()
 	for(auto & e : var.GetPattern())
 	{
 		std::string str(e.begin(), e.end());
-		// std::cout << str << std::endl;
 		pattern_set.emplace_back(str);
 	}
-	// std::string str = "100011000100000000001010000000000000000001000000000001000000000000000000000010000000100000000000100000010000001001";
-	// pattern_set.emplace_back(str);
 	return pattern_set;
 }
 

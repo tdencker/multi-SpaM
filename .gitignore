@@ -1,4 +1,5 @@
 /src/*.o
+/src/multi-SpaM
 /src/raxml/*.o
 /src/rasbhari/*.o
 /bin/multi-SpaM

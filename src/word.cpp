@@ -10,7 +10,18 @@
  * General Public License for more details at
  * http://www.gnu.org/copyleft/gpl.html
  *
- */#include "word.hpp"
+ */
+
+/**
+* @file 
+* @brief Definitions of the Word class.
+**/
+
+#include "word.hpp"
+
+/**
+* @brief
+**/
 
 static inline char reverse(char & c)
 {
@@ -19,37 +30,21 @@ static inline char reverse(char & c)
 
 std::vector<char> Word::dummy_vec;
 
-int Word::getPos( std::vector<Sequence> & sequences ) const
-{
-	auto dist = std::distance( sequences[_seq].content.begin(), _pos);
-	if(_rev_comp)
-		dist = sequences[_seq].content.size() - dist;
-	return dist;
-}
-
-int Word::getDistance(Word & other) const
-{
-	int dist = std::distance(_pos, other._pos);
-	if(_rev_comp)
-		dist *= -1;
-	return dist;
-}
-
-std::string Word::to_string(unsigned length)
+std::string Word::toString(unsigned length)
 {
     std::string buf;
     buf.reserve(length);
-	if(_rev_comp)
+	if(m_rev_comp)
 	{
 		for(unsigned i = 0; i < length; ++i)
 		{
-			buf[i] = reverse(*(_pos - i));
+			buf[i] = reverse(*(m_pos - i));
 		}
 	}else
 	{
 		for(unsigned i = 0; i < length; ++i)
 		{
-			buf[i] = *(_pos + i);
+			buf[i] = *(m_pos + i);
 		}
 	}
 	for(unsigned i = 0; i < length; ++i)
@@ -66,14 +61,7 @@ std::string Word::to_string(unsigned length)
 	return buf;
 }
 
-void Word::reverseIterator(int pattern_length)
-{
-	int factor = _rev_comp ? -1 : 1;
-	_pos += (pattern_length - 1) * factor;
-	_rev_comp = ! _rev_comp;
-}
-
-Word::Word(Pattern & p, std::vector<char>::iterator it, int16_t seq, bool rev_comp) :  _pos(it), _key(0), _seq(seq), _rev_comp(rev_comp)
+Word::Word(Pattern & p, std::vector<char>::iterator it, int16_t seq, bool rev_comp) :  m_pos(it), m_key(0), m_seq(seq), m_rev_comp(rev_comp)
 {
     const unsigned mask = options::mask;
     const unsigned shift = options::symbol_bits;
@@ -81,7 +69,7 @@ Word::Word(Pattern & p, std::vector<char>::iterator it, int16_t seq, bool rev_co
 	{
 		unsigned nuc = 0;
 		int offset = p[i];
-		if(_rev_comp)
+		if(m_rev_comp)
 			offset *= -1;
 			
 		nuc = * (it + offset);
@@ -91,74 +79,52 @@ Word::Word(Pattern & p, std::vector<char>::iterator it, int16_t seq, bool rev_co
             throw std::exception(); // illegal character
         }
 
-		if(_rev_comp)
+		if(m_rev_comp)
 			nuc = mask - nuc;
-		_key <<= shift;
-		_key |= nuc;
+		m_key <<= shift;
+		m_key |= nuc;
 	}
 }
 
-Word::Word() : _pos(dummy_vec.begin()), _key(0), _seq(0), _rev_comp(false)
+Word::Word() : m_pos(dummy_vec.begin()), m_key(0), m_seq(0), m_rev_comp(false)
 {}
 
 char Word::operator[](const int & idx) const 
 { 
-	return _rev_comp ? reverse(*(_pos - idx)) : *(_pos + idx); 
+	return m_rev_comp ? reverse(*(m_pos - idx)) : *(m_pos + idx); 
 }
 
 bool Word::revComp() const 
 { 
-    return _rev_comp;
+    return m_rev_comp;
 }
 
 bool Word::isDummy() const 
 {
-    return _pos == dummy_vec.begin();
+    return m_pos == dummy_vec.begin();
 }
 
 bool Word::operator<(const Word & other) const
 { 
-    return _key < other._key; 
+    return m_key < other.m_key; 
 }
 
 bool Word::operator==(const Word & other) const 
 {
-    return _pos == other._pos;
+    return m_pos == other.m_pos;
 }
 
 int Word::getSeq() const 
 {
-    return _seq;
+    return m_seq;
 }
 
 uint32_t Word::getKey() const 
 {
-    return _key;
+    return m_key;
 }
 
 std::vector<char>::iterator Word::getPos() const 
 {
-    return _pos;
-}
-
-void Word::moveLeft(int distance) 
-{
-    assert(distance >= 0);
-    if(_rev_comp) 
-        _pos += distance; 
-    else 
-        _pos -= distance;
-}
-void Word::moveRight(int distance) 
-{
-    assert(distance >= 0);
-    if(_rev_comp) 
-        _pos -= distance; 
-    else 
-        _pos += distance;
-}
-
-void Word::swapPos(Word & other) 
-{ 
-    std::swap(_pos, other._pos);
+    return m_pos;
 }

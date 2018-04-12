@@ -10,7 +10,9 @@
  * General Public License for more details at
  * http://www.gnu.org/copyleft/gpl.html
  *
- */#ifndef SEQUENCE_HPP_
+ */
+
+#ifndef SEQUENCE_HPP_
 #define SEQUENCE_HPP_
 
 #include <vector>

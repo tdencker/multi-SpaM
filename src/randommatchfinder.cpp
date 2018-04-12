@@ -10,7 +10,9 @@
  * General Public License for more details at
  * http://www.gnu.org/copyleft/gpl.html
  *
- */#include "randommatchfinder.hpp"
+ */
+
+#include "randommatchfinder.hpp"
 
 RandomMatchFinder::RandomMatchFinder(std::vector<Word> & sorted_array, int thread_id, int thread_num)
 {

@@ -10,7 +10,9 @@
  * General Public License for more details at
  * http://www.gnu.org/copyleft/gpl.html
  *
- */#ifndef RANDOMMATCHFINDER_HPP_
+ */
+
+#ifndef RANDOMMATCHFINDER_HPP_
 #define RANDOMMATCHFINDER_HPP_
 
 //TODO:check

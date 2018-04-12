@@ -10,7 +10,9 @@
  * General Public License for more details at
  * http://www.gnu.org/copyleft/gpl.html
  *
- */#include <vector>
+ */
+
+#include <vector>
 #include <fstream>
 #include <iostream>
 #include <unordered_map>

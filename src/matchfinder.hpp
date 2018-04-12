@@ -10,7 +10,8 @@
  * General Public License for more details at
  * http://www.gnu.org/copyleft/gpl.html
  *
- */#ifndef MATCHFINDER_HPP_
+ */
+#ifndef MATCHFINDER_HPP_
 #define MATCHFINDER_HPP_
 
 #include <vector>

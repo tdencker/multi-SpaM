@@ -10,7 +10,9 @@
  * General Public License for more details at
  * http://www.gnu.org/copyleft/gpl.html
  *
- */#ifndef RAXMLWRAPPER_HPP_
+ */
+
+#ifndef RAXMLWRAPPER_HPP_
 #define RAXMLWRAPPER_HPP_
 
 extern "C"

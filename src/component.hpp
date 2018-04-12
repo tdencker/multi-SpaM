@@ -10,7 +10,8 @@
  * General Public License for more details at
  * http://www.gnu.org/copyleft/gpl.html
  *
- */#ifndef COMPONENT_HPP_
+ */
+#ifndef COMPONENT_HPP_
 #define COMPONENT_HPP_
 
 #include <algorithm>

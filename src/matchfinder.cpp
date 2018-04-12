@@ -10,7 +10,8 @@
  * General Public License for more details at
  * http://www.gnu.org/copyleft/gpl.html
  *
- */#include "matchfinder.hpp"
+ */
+#include "matchfinder.hpp"
 
 size_t MatchFinder::progress()
 {

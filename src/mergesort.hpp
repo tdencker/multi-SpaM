@@ -10,7 +10,8 @@
  * General Public License for more details at
  * http://www.gnu.org/copyleft/gpl.html
  *
- *///#ifndef MERGESORT_HPP_
+ */
+//#ifndef MERGESORT_HPP_
 //#define MERGESORT_HPP_
 //
 //#ifdef _OPENMP

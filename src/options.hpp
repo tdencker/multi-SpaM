@@ -10,7 +10,9 @@
  * General Public License for more details at
  * http://www.gnu.org/copyleft/gpl.html
  *
- */#ifndef OPTIONS_HPP_
+ */
+
+#ifndef OPTIONS_HPP_
 #define OPTIONS_HPP_
 
 #include <string>

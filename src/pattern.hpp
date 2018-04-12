@@ -10,7 +10,9 @@
  * General Public License for more details at
  * http://www.gnu.org/copyleft/gpl.html
  *
- */#ifndef PATTERN_HPP_
+ */
+
+#ifndef PATTERN_HPP_
 #define PATTERN_HPP_
 
 #include <vector>

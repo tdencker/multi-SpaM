@@ -10,7 +10,9 @@
  * General Public License for more details at
  * http://www.gnu.org/copyleft/gpl.html
  *
- */#include <iostream>
+ */
+
+#include <iostream>
 #include <iomanip>
 #include "options.hpp"
 

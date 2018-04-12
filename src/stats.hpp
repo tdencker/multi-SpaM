@@ -10,7 +10,9 @@
  * General Public License for more details at
  * http://www.gnu.org/copyleft/gpl.html
  *
- */#ifndef STATS_HPP_
+ */
+
+#ifndef STATS_HPP_
 #define STATS_HPP_
 
 namespace stats

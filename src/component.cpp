@@ -10,7 +10,8 @@
  * General Public License for more details at
  * http://www.gnu.org/copyleft/gpl.html
  *
- */#include "component.hpp"
+ */
+#include "component.hpp"
 
 Component::Component(const std::vector<Word>::iterator & first, int n)
     : _total(n,0),

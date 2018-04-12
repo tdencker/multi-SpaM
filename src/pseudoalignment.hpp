@@ -10,7 +10,8 @@
  * General Public License for more details at
  * http://www.gnu.org/copyleft/gpl.html
  *
- */#ifndef PSEUDOALIGNMENT_HPP_
+ */
+#ifndef PSEUDOALIGNMENT_HPP_
 #define PSEUDOALIGNMENT_HPP_
 
 #include <vector>
@@ -63,7 +64,7 @@ class PseudoAlignment
 	        if(e.getSeq() == seq)
 	        {
 	            assert(checkBoundaries(sequences));
-	            return e.to_string(_length);
+	            return e.toString(_length);
 	        }
 	    for(auto & e : _words)
 	    {
@@ -73,27 +74,12 @@ class PseudoAlignment
 	    exit(1);
 	}
 	
-	std::string print(int idx, std::vector<Sequence> & sequences) //{ return _words[idx].to_string(_length); }
-	{
-		assert(_length > 0);
-		if(_length > 100000)
-		{
-			std::cout << "Warning: pa might be too large! " << _length << std::endl;
-		}
-		if(_words[idx].getSeq() >= (int)sequences.size())
-		{
-			std::cout << "Error: seq too large " << _words[idx].getSeq() << " " << _length << " " <<  _words[idx].getPos(sequences) << std::endl;
-			exit(1);
-		}
-		return _words[idx].to_string(_length);
-	}
-	
     void printFull(std::vector<Sequence> & sequences, std::ostream & out = std::cout)
     {
         for(auto & w : _words)
         {
             out << ">" << sequences[w.getSeq()].id << std::endl;
-            out << w.to_string(_length) << std::endl;
+            out << w.toString(_length) << std::endl;
         }
     }
 	//remove maybe

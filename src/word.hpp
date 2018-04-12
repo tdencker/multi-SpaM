@@ -10,17 +10,20 @@
  * General Public License for more details at
  * http://www.gnu.org/copyleft/gpl.html
  *
- */#ifndef WORD_HPP_
+ */
+
+#ifndef WORD_HPP_
 #define WORD_HPP_
 
 #include "options.hpp"
 #include "pattern.hpp"
 #include "sequence.hpp"
-#include <vector>
-#include <limits>
+
 #include <cassert>
-#include <string>
 #include <iostream>
+#include <limits>
+#include <string>
+#include <vector>
 
 class Word
 {
@@ -35,19 +38,13 @@ class Word
 	int getSeq() const;
 	uint32_t getKey() const;
 	std::vector<char>::iterator getPos() const;
-	void reverseIterator(int);
-	void moveLeft(int);
-	void moveRight(int);
-	std::string to_string(unsigned);
-	int getPos( std::vector<Sequence> & ) const; 
-	void swapPos(Word &);
-	int getDistance(Word &) const;
+	std::string toString(unsigned);
     
 	private:
-	std::vector<char>::iterator _pos;
-	uint32_t _key;
-	int16_t _seq;
-	bool _rev_comp;
+	std::vector<char>::iterator m_pos;
+	uint32_t m_key;
+	int16_t m_seq;
+	bool m_rev_comp;
     static std::vector<char> dummy_vec;
 };
 

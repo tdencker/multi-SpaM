@@ -54,92 +54,26 @@ inline void PseudoAlignment::setSequenceKey()
     {
         _seq_key |= 1 << e.getSeq();
     }
-    
 }
 
-// TODO: which constructors are actually used?
-PseudoAlignment::PseudoAlignment(std::vector< std::vector<Word>::iterator > & vec, int pattern_length, uint64_t seq_key, bool aligned) : _length(pattern_length), _seq_key(seq_key), _merge_count(0), _was_aligned(aligned)
+PseudoAlignment::PseudoAlignment(std::vector< std::vector<Word>::iterator > & vec, int pattern_length, uint64_t seq_key) 
+    : _length(pattern_length), _seq_key(seq_key)
 {
 	assert(vec.size() >= options::min_sequences);
 	assert(vec.size() <= 32 );
 	_words.reserve(vec.size());
 	for(auto & it : vec)
-		_words.push_back(*it); // TODO: move?
-	std::sort(_words.begin(), _words.end(), [](const Word & a, const Word & b){return a.getSeq() < b.getSeq();});
-//	setSequenceKey();
+		_words.push_back(*it);
+	std::sort(_words.begin(), _words.end(), [](const Word & a, const Word & b)
+    {
+        return a.getSeq() < b.getSeq();
+    });
 }
 
-PseudoAlignment::PseudoAlignment(std::vector<Word> && vec, int length, bool aligned) : _words(vec), _length(length), _merge_count(0), _was_aligned(aligned)
+PseudoAlignment::PseudoAlignment(std::vector<Word> && vec, int length) : _words(vec), _length(length)
 {
     setSequenceKey();
 }
 
-bool PseudoAlignment::checkBoundaries(std::vector<Sequence> & sequences)
-{
-        return checkBoundariesLeft(0, sequences) && checkBoundariesRight(_length - 1, sequences);
-        
-//        bool b = checkBoundariesLeft(0, sequences) && checkBoundariesRight(_length - 1, sequences);
-//        if(b == false)
-//        {
-//                for(unsigned i = 0; i < _words.size(); ++i)
-//                {
-//                        std::cout << i << ": " << std::boolalpha << checkBoundariesSingle(i, sequences,0,0) << std::endl;
-//                }
-//        }
-//        return b;
-}
-
-bool PseudoAlignment::checkBoundariesSingle(int seq, std::vector<Sequence> & sequences, int add_to_left, int length)
-{
-    if(length < 0)
-        length = _length;
-    if(_words[seq].revComp())
-	{
-		if(_words[seq].getPos() + add_to_left >= sequences[_words[seq].getSeq()].content.end() || _words[seq].getPos() + add_to_left - length + 1 < sequences[_words[seq].getSeq()].content.begin())
-			return false;
-	}
-	else
-	{
-		if(_words[seq].getPos() - add_to_left < sequences[_words[seq].getSeq()].content.begin() || _words[seq].getPos() - add_to_left + length - 1 >= sequences[_words[seq].getSeq()].content.end())
-			return false;
-	}
-	return true;
-}
-
-bool PseudoAlignment::checkBoundariesLeft(int pos, std::vector<Sequence> & sequences)
-{
-	assert(pos <= 0);
-	for(unsigned i = 0; i < _words.size(); ++i)
-	{
-		if(_words[i].revComp())
-		{
-			if(_words[i].getPos() - pos >= sequences[_words[i].getSeq()].content.end())
-				return false;
-		}
-		else
-		{
-			if(_words[i].getPos() + pos < sequences[_words[i].getSeq()].content.begin())
-				return false;
-		}
-	}
-	return true;
-}
-
-bool PseudoAlignment::checkBoundariesRight(int pos, std::vector<Sequence> & sequences)
-{
-	assert(pos >= 0);
-	for(unsigned i = 0; i < _words.size(); ++i)
-	{
-		if(_words[i].revComp())
-		{
-			if(_words[i].getPos() - pos < sequences[_words[i].getSeq()].content.begin())
-				return false;
-		}
-		else
-		{
-			if(_words[i].getPos() + pos >= sequences[_words[i].getSeq()].content.end())
-				return false;
-		}
-	}
-	return true;
-}
+PseudoAlignment::PseudoAlignment(int length) : _length(length), _seq_key(0)
+{}

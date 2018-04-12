@@ -32,13 +32,6 @@ class PseudoAlignment
 	typedef std::vector<Word>::iterator iterator;
 	PseudoAlignment(std::vector< std::vector<Word>::iterator > &, int, uint64_t, bool = false);
 	PseudoAlignment(std::vector<Word> &&, int, bool = false);
-	PseudoAlignment(PseudoAlignment &, unsigned , unsigned , unsigned , unsigned );
-	PseudoAlignment(PseudoAlignment &, std::vector<unsigned> &);
-	int64_t getDiagonalHash(std::vector<Sequence> &) const;
-	bool hasOverlap(PseudoAlignment &);
-	int getPartialOverlap(PseudoAlignment &);
-	void merge(PseudoAlignment &, std::vector<Sequence> &); // REMOVE VECTOR
-	void print(std::vector<Sequence> &, std::ostream & = std::cout);
 //	bool operator<(const PseudoAlignment & other) const { return _words[0].getPos() < other._words[0].getPos(); } // TODO: this might not be enough if revcomp
     bool operator<(const PseudoAlignment & other) const { return _seq_key < other._seq_key; }
     
@@ -48,9 +41,8 @@ class PseudoAlignment
 	bool checkBoundariesSingle(int, std::vector<Sequence> &, int = 0, int = -1);
 	bool checkBoundariesLeft(int, std::vector<Sequence> &);
 	bool checkBoundariesRight(int, std::vector<Sequence> &);
-	void ungappedExtension(int, std::vector<Sequence> &, int = 2);
 	
-	static bool hashCompare(const PseudoAlignment & pa1, const PseudoAlignment & pa2, std::vector<Sequence> & sequences) { return pa1.getDiagonalHash(sequences) < pa2.getDiagonalHash(sequences); } // TODO: make this better if it works
+	//static bool hashCompare(const PseudoAlignment & pa1, const PseudoAlignment & pa2, std::vector<Sequence> & sequences) { return pa1.getDiagonalHash(sequences) < pa2.getDiagonalHash(sequences); } // TODO: make this better if it works
 	
 	uint64_t getSequenceKey() const;
 	

@@ -1,7 +1,10 @@
 /src/*.o
 /src/multi-SpaM
+/src/multi-SpaM.exe
 /src/raxml/*.o
 /src/rasbhari/*.o
 /bin/multi-SpaM
+/bin/multi-SpaM.exe
 outtree
+outfile
 /.vs/

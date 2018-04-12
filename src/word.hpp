@@ -25,6 +25,13 @@
 #include <string>
 #include <vector>
 
+ /**
+ * @brief The Word class contains the spaced word (a 32-bit integer hash),
+ * the position as an iterator, the sequence number and wether it is 
+ * reverse complement or not. The default constructor produces a dummy word
+ * which is used to mark "removed" words.
+ **/
+
 class Word
 {
 	public:

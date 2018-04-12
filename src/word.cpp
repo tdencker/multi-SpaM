@@ -20,7 +20,7 @@
 #include "word.hpp"
 
 /**
-* @brief
+* @brief Computes the reverse nucleotide (encoded as 2 bit)
 **/
 
 static inline char reverse(char & c)
@@ -28,7 +28,15 @@ static inline char reverse(char & c)
 	return ~c & 3;
 }
 
+/**
+* @brief Vector to mark words as "removed"
+**/
+
 std::vector<char> Word::dummy_vec;
+
+/**
+* @brief String representation of the Word (also accounting for reverse complement)
+**/
 
 std::string Word::toString(unsigned length)
 {
@@ -55,13 +63,25 @@ std::string Word::toString(unsigned length)
 			case 1: buf[i] = 'C';break;
 			case 2: buf[i] = 'G';break;
 			case 3: buf[i] = 'T';break;
-			default: std::cerr << "Illegal character: " << buf[i] << std::endl; //exit(1); //TODO: uncomment when errors are fixed
+			default: std::cerr << "Illegal character: " << buf[i] << std::endl;
 		}
 	}
 	return buf;
 }
 
-Word::Word(Pattern & p, std::vector<char>::iterator it, int16_t seq, bool rev_comp) :  m_pos(it), m_key(0), m_seq(seq), m_rev_comp(rev_comp)
+/**
+* @brief Constructor of Word: Encodes the nucleotides at the match positions 
+* as indicated by the pattern into a 32 bit unsigned int (2 bit each). Throws if 
+* there is a non-nucleotide symbol at one of the matching positions.
+*
+* @param p - Pattern (e.g. 10001011011) indicating match and don't care positions
+* @param it - Starting position of the spaced word
+* @param seq - Id of the sequence of the word
+* @param rev_comp - Reverse complement word? 
+**/
+
+Word::Word(Pattern & p, std::vector<char>::iterator it, int16_t seq, bool rev_comp) 
+    :  m_pos(it), m_key(0), m_seq(seq), m_rev_comp(rev_comp)
 {
     const unsigned mask = options::mask;
     const unsigned shift = options::symbol_bits;
@@ -85,6 +105,10 @@ Word::Word(Pattern & p, std::vector<char>::iterator it, int16_t seq, bool rev_co
 		m_key |= nuc;
 	}
 }
+
+/**
+* @brief Constructor of a "removed" word. Only useful for isDummy().
+**/
 
 Word::Word() : m_pos(dummy_vec.begin()), m_key(0), m_seq(0), m_rev_comp(false)
 {}

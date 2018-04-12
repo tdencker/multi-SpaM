@@ -1,4 +1,14 @@
 /**
+ * @file
+ *
+ * This is the main file. It contains all top level functions for 
+ * the game logic.
+ *
+ * @brief the main file
+ * @author Thomas Dencker
+ *
+ * @section License
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 3 of
@@ -32,19 +42,23 @@
 #include "pattern.hpp"
 #include "sequence.hpp"
 #include "word.hpp"
-#include "matchfinder.hpp"
 #include "pseudoalignment.hpp"
 #include "rasbhari/variance.h"
 #include "options.hpp"
-// #include "mergesort.hpp"
+#include "mergesort.hpp"
 #include "stats.hpp"
-// #include "wordarray.hpp"
 #include "raxmlwrapper.hpp"
 #include "randommatchfinder.hpp"
 
 #include <numeric>
 
 constexpr int steps = 5;
+constexpr int num_buckets = 256;
+
+/**
+* @brief Runs RAxML and writes the resulting quartet trees in the outfile. For more detail, see
+* raxmlwrapper.hpp.
+**/
 
 void RunRAxML(std::vector<PseudoAlignment> & pa_vec)
 {
@@ -62,7 +76,8 @@ void RunRAxML(std::vector<PseudoAlignment> & pa_vec)
         #ifdef _OPENMP
         if(omp_get_thread_num() == 0)
         #endif
-        std::cout << "\r[Step 5 / " << steps << "] Calculating optimal quartet trees for block: " << i << " / " << pa_vec.size() << " ( Length: " << pa_vec[i].getLength() << " )              " << std::flush;
+        std::cout << "\r[Step 5 / " << steps << "] Calculating optimal quartet trees for block: " 
+            << i << " / " << pa_vec.size() << " ( Length: " << pa_vec[i].getLength() << " )              " << std::flush;
 
         #pragma omp atomic
         nbr_quartets += computeAndPrintBestQuartets(pa_vec[i],  out_file);
@@ -70,46 +85,23 @@ void RunRAxML(std::vector<PseudoAlignment> & pa_vec)
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> diff = end-start;
     #pragma omp master
-    std::cout << "\r[Step 5 / " << steps << "] Calculating optimal quartet trees in " << diff.count() << " seconds.                            " << std::endl;
+    std::cout << "\r[Step 5 / " << steps << "] Calculating optimal quartet trees in " 
+        << diff.count() << " seconds.                            " << std::endl;
 }
 
-std::vector<PseudoAlignment> samplingPseudoAlignmentsMemSave(std::vector<Word> &words, Pattern & current_pattern, size_t nbr_sequences, unsigned & progress, int thread_id, int thread_num)
+/**
+* @brief This function samples quartet blocks from the word vector until options::num_samples 
+* quartet blocks have been found. The sampling is done with the RandomMatchFinder.
+**/
+
+std::vector<PseudoAlignment> samplingPseudoAlignments(std::vector<Word> &words, Pattern & current_pattern, 
+    size_t nbr_sequences, unsigned & progress, int thread_id, int thread_num, bool mem_save = false)
 {
-    #pragma omp master
-    std::cout << "[Step 4 / " << steps << "] Sampling blocks ..." << std::flush;
-    auto start = std::chrono::steady_clock::now();
-    
-    RandomMatchFinder rmf(words, thread_id, thread_num);
-    std::vector<PseudoAlignment> pa_vec;
-    progress = 0; // TODO: change the progress to something useful
-    while(progress < (options::nbr_samples / (options::patterns * 256)) ) // TODO: bucket stuff
-    {
-        #pragma omp master
-        if(progress % 100 == 0) // TODO: doesn't work well for many threads
-            std::cout << "\r[Step 4 / " << steps << "] Sampling blocks ... Progress: " << progress << " / " << options::nbr_samples << std::flush;
+    unsigned limit = options::nbr_samples / options::patterns;
 
-        try
-        {
-            pa_vec.push_back(rmf.next(current_pattern, nbr_sequences));
-        }
-        catch(const std::exception & e)
-        {
-            break;
-        }
+    if (mem_save == true)
+        limit /= num_buckets;
 
-        #pragma omp atomic
-        progress++;
-    }
-    
-    auto end = std::chrono::steady_clock::now();
-    std::chrono::duration<double> diff = end-start;
-    #pragma omp master
-    std::cout << "\r[Step 4 / " << steps << "] Sampling blocks in " << diff.count() << " seconds.                            " << std::endl;
-    return pa_vec;
-}
-
-std::vector<PseudoAlignment> samplingPseudoAlignments(std::vector<Word> &words, Pattern & current_pattern, size_t nbr_sequences, unsigned & progress, int thread_id, int thread_num)
-{
     #pragma omp master
     std::cout << "[Step 4 / " << steps << "] Sampling blocks ..." << std::flush;
 	auto start = std::chrono::steady_clock::now();
@@ -117,11 +109,12 @@ std::vector<PseudoAlignment> samplingPseudoAlignments(std::vector<Word> &words, 
     RandomMatchFinder rmf(words, thread_id, thread_num);
     std::vector<PseudoAlignment> pa_vec;
 
-    while(progress < options::nbr_samples)
+    while( progress < limit )
     {
         #pragma omp master
         if(progress % 100 == 0) // TODO: doesn't work well for many threads
-            std::cout << "\r[Step 4 / " << steps << "] Sampling blocks ... Progress: " << progress << " / " << options::nbr_samples << std::flush;
+            std::cout << "\r[Step 4 / " << steps << "] Sampling blocks ... Progress: " 
+            << progress << " / " << options::nbr_samples << std::flush;
 
         try
         {
@@ -143,66 +136,35 @@ std::vector<PseudoAlignment> samplingPseudoAlignments(std::vector<Word> &words, 
     return pa_vec;
 }
 
-std::vector<PseudoAlignment> findAllPseudoAlignments(std::vector<Word> & words, Pattern & current_pattern, size_t nbr_sequences, unsigned & progress, int thread_id, int thread_num)
-{
-    #pragma omp master
-    std::cout << "[Step 4 / " << steps << "] Finding all blocks ... " << std::flush;
-	auto start = std::chrono::steady_clock::now();
-    
-    MatchFinder finder(words, thread_id, thread_num);
-    std::vector<PseudoAlignment> pa_vec;
-    unsigned total_mil = words.size() / 1000000;
-    unsigned current_mil = -1;
-    
-    while(finder.next()) // while there is a match
-    {
-        #pragma omp atomic
-        progress += finder.progress();
-        #pragma omp master
-        {
-        if( ( progress / 1000000 ) != current_mil )
-        {
-            current_mil++;
-            std::cout << "\r[Step 4 / " << steps << "] Finding all blocks ... Progress: " << current_mil << " / " << total_mil << " million words" << std::flush;
-        }
-        }
-        std::vector<Component> components = finder.getCurrentComponents(current_pattern, nbr_sequences); // get all matches with positive score
-        for(auto & comp : components)
-        {
-            pa_vec.emplace_back(current_pattern.size());
-            for(auto & w : comp)
-            {
-                pa_vec.back().push_back(*w);
-            }
-            pa_vec.back().sort();
-        }
-    }
-    
-    auto end = std::chrono::steady_clock::now();
-	std::chrono::duration<double> diff = end-start;
-    #pragma omp master
-    std::cout << "\r[Step 4 / " << steps << "] Finding all blocks in " << diff.count() << " seconds.                       " << std::endl;
-    return pa_vec;
-}
+/**
+* @brief sorts the spaced words vector
+**/
 
 void sortSpacedWords(std::vector <Word> &words)
 {
     std::cout << "[Step 3 / " << steps << "] Sorting spaced words ..." << std::flush;
 	auto start = std::chrono::steady_clock::now();
-	std::sort(words.begin(), words.end());
     // parallel merge sort sometimes allocates more space than necessary for some reason...
-    // words.sort() // parallel merge sort
+    mergeSort(words.begin(), words.end());
 	auto end = std::chrono::steady_clock::now();
 	std::chrono::duration<double> diff = end-start;
     std::cout << "\r[Step 3 / " << steps << "] Sorted spaced words in " << diff.count() << " seconds." << std::endl;
 }
 
-std::vector<Word> createSpacedWordsMemSave(std::vector<Sequence> & sequences, Pattern & current_pattern, bool compute_rev_comp, uint64_t bucket)
+/**
+* @brief See createSpacedWords for the basic information. The size of the vector is not precalculated here.
+* The hash for the first 4 nucleotides has to be identical to the bucket unsigned integer, otherwise
+* the word is not created.
+**/
+
+std::vector<Word> createSpacedWordsMemSave(std::vector<Sequence> & sequences, Pattern & current_pattern, 
+    bool compute_rev_comp, uint64_t bucket)
 {
     auto start = std::chrono::steady_clock::now();
     std::vector<Word> words;
     int finished_sequences = 0;
-    std::cout << "\r[Step 2 / " << steps << "] Creating spaced words: " << finished_sequences << " / " << sequences.size() << " sequences for bucket: " << bucket << std::flush;
+    std::cout << "\r[Step 2 / " << steps << "] Creating spaced words: " 
+        << finished_sequences << " / " << sequences.size() << " sequences for bucket: " << bucket << std::flush;
 #pragma omp parallel for schedule(static)
     for (int i = 0; i < (int)sequences.size(); ++i)
     {
@@ -270,7 +232,8 @@ std::vector<Word> createSpacedWordsMemSave(std::vector<Sequence> & sequences, Pa
 #pragma omp critical
         {
             words.insert(words.end(), localWords.begin(), localWords.end());
-            std::cout << "\r[Step 2 / " << steps << "] Creating spaced words: " << ++finished_sequences << " / " << sequences.size() << " sequences for bucket: " << bucket << std::flush;
+            std::cout << "\r[Step 2 / " << steps << "] Creating spaced words: " 
+                << ++finished_sequences << " / " << sequences.size() << " sequences for bucket: " << bucket << std::flush;
         }
     }
     auto end = std::chrono::steady_clock::now();
@@ -279,7 +242,13 @@ std::vector<Word> createSpacedWordsMemSave(std::vector<Sequence> & sequences, Pa
     return words;
 }
 
-std::vector<Word> createSpacedWords(std::vector<Sequence> & sequences, Pattern & current_pattern, bool compute_rev_comp = true)
+/**
+* @brief The spaced words are created for all sequences and a given pattern. The size of the vector
+* is precalculated. By default, the spaced words for the reverse complement are also created.
+**/
+
+std::vector<Word> createSpacedWords(std::vector<Sequence> & sequences, Pattern & current_pattern, 
+    bool compute_rev_comp = true)
 {
     auto start = std::chrono::steady_clock::now();
     std::vector<size_t> start_points(sequences.size());
@@ -293,7 +262,8 @@ std::vector<Word> createSpacedWords(std::vector<Sequence> & sequences, Pattern &
     std::vector<Word> words;
     words.resize(size);
 	int finished_sequences = 0;
-    std::cout << "\r[Step 2 / " << steps << "] Creating spaced words: " <<  finished_sequences << " / " << sequences.size() << " sequences" << std::flush;
+    std::cout << "\r[Step 2 / " << steps << "] Creating spaced words: " 
+        <<  finished_sequences << " / " << sequences.size() << " sequences" << std::flush;
 	#pragma omp parallel for schedule(static)
 	for(int i = 0; i < (int)sequences.size(); ++i)
 	{
@@ -316,13 +286,119 @@ std::vector<Word> createSpacedWords(std::vector<Sequence> & sequences, Pattern &
 		    }
 		}
 		#pragma omp critical
-		std::cout << "\r[Step 2 / " << steps << "] Creating spaced words: " <<  ++finished_sequences << " / " << sequences.size() << " sequences" << std::flush;
+		std::cout << "\r[Step 2 / " << steps << "] Creating spaced words: " 
+            <<  ++finished_sequences << " / " << sequences.size() << " sequences" << std::flush;
 	}
     auto end = std::chrono::steady_clock::now();
 	std::chrono::duration<double> diff = end-start;
 	std::cout << "\r[Step 2 / " << steps << "] Created spaced words in " << diff.count() << " seconds." << std::endl;
     return words;
 }
+
+/**
+* @brief See runStandard for main functionality. The memory saving mode only stores words that
+* start with the same 4 nucleotides at the don't care positions. Thus, there are 256 iterations
+* per pattern. The number of samples are divided by 256, so they are not gonna be exactly the
+* same amount of blocks as for the standard run.
+**/
+
+std::vector<PseudoAlignment> runMemSave(std::vector<Sequence> & sequences, std::vector<Pattern> & pattern_set)
+{
+    std::vector<PseudoAlignment> pa_vec;
+    unsigned progress = 0;
+
+    for (auto current_pattern : pattern_set)
+    {
+        for (uint64_t bucket = 0; bucket < num_buckets; ++bucket)
+        {
+            std::vector<Word> all_spaced_words = createSpacedWordsMemSave(
+                sequences, current_pattern, true, bucket);
+
+            sortSpacedWords(all_spaced_words);
+
+#pragma omp parallel
+            {
+                int thread_id = 0;
+                int thread_num = 1;
+
+#ifdef _OPENMP
+                thread_id = omp_get_thread_num();
+                thread_num = omp_get_num_threads();
+#endif
+
+                std::vector<PseudoAlignment> thread_pa_vec = samplingPseudoAlignments(
+                    all_spaced_words, current_pattern, sequences.size(), progress, thread_id, thread_num, true);
+
+                // reduction of the index (if necessary)
+#pragma omp critical
+                {
+                    if (thread_num > 1 || pattern_set.size() > 1)
+                    {
+                        pa_vec.insert(pa_vec.end(), thread_pa_vec.begin(), thread_pa_vec.end());
+                    }
+                    else
+                    {
+                        std::swap(thread_pa_vec, pa_vec);
+                    }
+                } // end of critical
+            } // end of parallel
+        }
+
+    }
+    assert(pa_vec.size() > 0);
+    return pa_vec;
+}
+
+/**
+* @brief Creates a list of spaced words for every sequence in the sequence vector. The words
+* are then sorted and passed to the sampling step. This process is repeated for every pattern
+* in the pattern set.
+**/
+
+std::vector<PseudoAlignment> runStandard(std::vector<Sequence> & sequences, std::vector<Pattern> & pattern_set)
+{
+    std::vector<PseudoAlignment> pa_vec;
+    unsigned progress = 0;
+
+    for (auto current_pattern : pattern_set)
+    {
+        std::vector<Word> all_spaced_words = createSpacedWords(sequences, current_pattern);
+        sortSpacedWords(all_spaced_words);
+
+#pragma omp parallel
+        {
+            int thread_id = 0;
+            int thread_num = 1;
+
+#ifdef _OPENMP
+            thread_id = omp_get_thread_num();
+            thread_num = omp_get_num_threads();
+#endif
+
+            std::vector<PseudoAlignment> thread_pa_vec = samplingPseudoAlignments(
+                all_spaced_words, current_pattern, sequences.size(), progress, thread_id, thread_num);
+
+            // reduction of the index (if necessary)
+#pragma omp critical
+            {
+                if (thread_num > 1 || pattern_set.size() > 1)
+                {
+                    pa_vec.insert(pa_vec.end(), thread_pa_vec.begin(), thread_pa_vec.end());
+                }
+                else
+                {
+                    std::swap(thread_pa_vec, pa_vec);
+                }
+            } // end of critical
+        } // end of parallel
+    }
+    assert(pa_vec.size() > 0);
+    return pa_vec;
+}
+
+/**
+* @brief Read the sequences from the FASTA file provided with the "-i" flag.
+**/
 
 std::vector<Sequence> readSequences()
 {
@@ -339,6 +415,10 @@ std::vector<Sequence> readSequences()
     return sequences;
 }
 
+/**
+* @brief Initiatlize OMP with the number of threads.
+**/
+
 inline void initOMP()
 {
     #ifdef _OPENMP
@@ -348,8 +428,13 @@ inline void initOMP()
 	#endif
 }
 
-// TODO: neues rasbhari
-inline std::vector<Pattern> getPatternSet()
+/**
+* @brief Create one or multiple pattern with rasbhari.
+*
+* TODO: use newer version of rasbhari
+**/
+
+std::vector<Pattern> getPatternSet()
 {
     std::vector<Pattern> pattern_set;
 	variance var(options::patterns, options::weight, options::dontcare, options::dontcare);
@@ -363,100 +448,13 @@ inline std::vector<Pattern> getPatternSet()
 	return pattern_set;
 }
 
-std::vector<PseudoAlignment> runMemSave(std::vector<Sequence> & sequences, std::vector<Pattern> & pattern_set)
-{
-    std::vector<PseudoAlignment> pa_vec;
-    unsigned progress = 0;
-    
-    for(auto current_pattern : pattern_set)
-    {
-        uint64_t bucketCount = 256;
-        for (uint64_t bucket = 0; bucket < bucketCount; ++bucket)
-        {
-            std::vector<Word> all_spaced_words = createSpacedWordsMemSave(sequences, current_pattern, true, bucket);
-            sortSpacedWords(all_spaced_words);
+/**
+* @brief main function
+*
+* The main function read paramaters, sequence files, creates random pattern(s) and calls the run
+* function either with or without memory saving mode
+**/
 
-#pragma omp parallel
-            {
-                int thread_id = 0;
-                int thread_num = 1;
-
-#ifdef _OPENMP
-                thread_id = omp_get_thread_num();
-                thread_num = omp_get_num_threads();
-#endif
-
-                std::vector<PseudoAlignment> thread_pa_vec = samplingPseudoAlignmentsMemSave(all_spaced_words, current_pattern, sequences.size(), progress, thread_id, thread_num);
-
-                // reduction of the index (if necessary)
-#pragma omp critical
-                {
-                    if (thread_num > 1 || pattern_set.size() > 1)
-                    {
-                        pa_vec.insert(pa_vec.end(), thread_pa_vec.begin(), thread_pa_vec.end());
-                    }
-                    else
-                    {
-                        std::swap(thread_pa_vec, pa_vec);
-                    }
-                } // end of critical
-            } // end of parallel
-        }
-        
-    }
-    assert(pa_vec.size() > 0);
-    return pa_vec;
-}
-
-std::vector<PseudoAlignment> runStandard(std::vector<Sequence> & sequences, std::vector<Pattern> & pattern_set)
-{
-    std::vector<PseudoAlignment> pa_vec;
-    unsigned progress = 0;
-    
-    for(auto current_pattern : pattern_set)
-    {
-        std::vector<Word> all_spaced_words = createSpacedWords(sequences, current_pattern);
-        sortSpacedWords(all_spaced_words);
-        
-        #pragma omp parallel
-        {
-        int thread_id = 0;
-        int thread_num = 1;
-        
-        #ifdef _OPENMP
-        thread_id = omp_get_thread_num();
-        thread_num = omp_get_num_threads();
-        #endif
-        
-        std::vector<PseudoAlignment> thread_pa_vec = samplingPseudoAlignments(all_spaced_words, current_pattern, sequences.size(), progress, thread_id, thread_num);
-
-        // reduction of the index (if necessary)
-        #pragma omp critical
-        {
-        if(thread_num > 1 || pattern_set.size() > 1)
-        {   
-            pa_vec.insert(pa_vec.end(), thread_pa_vec.begin(), thread_pa_vec.end());
-        }else
-        {
-            std::swap(thread_pa_vec, pa_vec);
-        }
-        } // end of critical
-        } // end of parallel
-    }
-    assert(pa_vec.size() > 0);
-    return pa_vec;
-}
-
-// TODO: try filling an array before calculation of match score
-// TODO: try using matchpos instead of ismatch when calculating the score
-// TODO: is there a way to use chris' bucket like sorting to be faster?
-// TODO: make a hashmap of all words -> components that were removed because of too many revcomp words, just reverse the components and use them automatically without computing the scores again
-// or even better: just reverse the words in the component and mark the reverse complement word to be skipped (does this work?)
-// TODO: test if it works without linking openmp
-// TODO: maybe check which version of the component ( more or less revcomp ) has less conflicts (defaulting to the non revcomp version) and insert that one
-// TODO: maybe make an option for "aligning" / mapping instead of removing uncertainties, but it needs to be rethought
-// TODO: also on option: compute all match scores for more accuracy and full connectivity can be enforced
-// TODO: finally test different score computation strategies (with array etc.)
 int main(int argc, char** argv)
 {
 	options::parseParameters(argc, argv);
@@ -465,9 +463,8 @@ int main(int argc, char** argv)
 	std::vector<Sequence> sequences = readSequences();
     std::vector<Pattern> pattern_set = getPatternSet();
     
-    std::vector<PseudoAlignment> pa_vec = options::mem_save_mode ? runMemSave(sequences, pattern_set) : runStandard(sequences, pattern_set);
-
-    // ungappedExtension(pa_vec, sequences);
+    std::vector<PseudoAlignment> pa_vec = options::mem_save_mode ? 
+        runMemSave(sequences, pattern_set) : runStandard(sequences, pattern_set);
     
     // quartet calculation using raxml
     

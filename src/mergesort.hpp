@@ -11,45 +11,46 @@
  * http://www.gnu.org/copyleft/gpl.html
  *
  */
-//#ifndef MERGESORT_HPP_
-//#define MERGESORT_HPP_
-//
-//#ifdef _OPENMP
-//#include <algorithm>
-//#include <omp.h>
-//
-//template<typename Iter>
-//void mergeSortBody(Iter begin, Iter end, int n)
-//{
-//    auto len = std::distance(begin, end);
-//    if (len <= 1024 || n < 2)
-//    {
-//        std::sort(begin,end);
-//        return;
-//    }
-//    Iter mid = std::next(begin, len/2);
-//    #pragma omp task
-//    mergeSortBody(begin, mid, n-2);
-//    #pragma omp task
-//    mergeSortBody(mid, end, n-2);
-//    #pragma omp taskwait
-//    std::inplace_merge(begin, mid, end);
-//}
-//template<typename Iter>
-//void mergeSort(Iter begin, Iter end)
-//{
-//    #pragma omp parallel
-//    {
-//        #pragma omp single
-//        mergeSortBody(begin, end, omp_get_num_threads());
-//    }
-//}
-//#else
-//template<typename Iter>
-//void mergeSort(Iter begin, Iter end)
-//{
-//    std::sort(begin, end);
-//}
-//#endif
-//
-//#endif
+
+#ifndef MERGESORT_HPP_
+#define MERGESORT_HPP_
+
+#if defined(_OPENMP) && !defined(_WIN32)
+#include <algorithm>
+#include <omp.h>
+
+template<typename Iter>
+void mergeSortBody(Iter begin, Iter end, int n)
+{
+    auto len = std::distance(begin, end);
+    if (len <= 1024 || n < 2)
+    {
+        std::sort(begin, end);
+        return;
+    }
+    Iter mid = std::next(begin, len / 2);
+#pragma omp task
+    mergeSortBody(begin, mid, n - 2);
+#pragma omp task
+    mergeSortBody(mid, end, n - 2);
+#pragma omp taskwait
+    std::inplace_merge(begin, mid, end);
+}
+template<typename Iter>
+void mergeSort(Iter begin, Iter end)
+{
+#pragma omp parallel
+    {
+#pragma omp single
+        mergeSortBody(begin, end, omp_get_num_threads());
+    }
+}
+#else
+template<typename Iter>
+void mergeSort(Iter begin, Iter end)
+{
+    std::sort(begin, end);
+}
+#endif
+
+#endif

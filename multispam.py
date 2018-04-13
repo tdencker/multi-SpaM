@@ -58,14 +58,15 @@ def build_id_map(filename):
 
 def fix_tree(tree_file, id_map, out_file):
 	import re
+	print(id_map)
 	with open(tree_file) as file, open(out_file, "w+") as out:
 		for line in file:
-			parts = re.split(',|\(|\)|;',line)
-			for p in parts:
-				if not p == "" and not p == "\n":
+			parts = re.split('(,|\(|\)|;)',line)
+			for idx, p in enumerate(parts):
+				if p.isdigit():
 					value = id_map[int(p)]
-					line = line.replace(p, value)
-			out.write(line)
+					parts[idx] = value
+			out.write(''.join(parts))
 
 
 if __name__ == "__main__":

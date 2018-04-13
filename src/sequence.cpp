@@ -12,6 +12,8 @@
  *
  */
 
+#include <algorithm>
+#include <exception>
 #include <vector>
 #include <fstream>
 #include <iostream>
@@ -59,4 +61,15 @@ Sequence::Sequence(std::string header, std::string & seq) : id(header)
 		}
 	}
 	content.shrink_to_fit();
+
+	size_t test_length = std::min(content.size(), (size_t) 100);
+	if( std::count_if(content.begin(), content.begin() + test_length, 
+		[](char c)
+		{
+			return c == std::numeric_limits<char>::max();
+		}) 
+		> 0.5 * test_length )
+	{
+		throw std::runtime_error("The sequence " + id + " is not a DNA sequence!");
+	}
 }

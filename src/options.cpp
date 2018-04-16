@@ -73,15 +73,15 @@ namespace options
 			case 's':
 				options::min_score = std::atoi(optarg);
 				break;
-			case 'm':
+			case 'x':
 				i = std::atoi(optarg);
-				if(i < 1) options::printError("Min_sequences (-m) must be an integer larger than 1");
+				if(i < 1) options::printError("Min_sequences (-x) must be an integer larger than 1");
 				options::min_sequences = (unsigned) i;
 				break;
 			case 'a':
 				all_sequences = true;
 				break;
-            case 'c':
+            case 'm':
                 mem_save_mode = true;
                 break;
 			case 'h': 

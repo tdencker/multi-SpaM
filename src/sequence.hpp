@@ -15,9 +15,19 @@
 #ifndef SEQUENCE_HPP_
 #define SEQUENCE_HPP_
 
-#include <vector>
+#include <algorithm>
+#include <exception>
+#include <iostream>
+#include <fstream>
+#include <limits>
 #include <string>
-#include <cctype>
+#include <unordered_map>
+#include <vector>
+
+/**
+* @brief Sequence container class. ID is the header of the sequence as described in the FASTA file and CONTENT is the DNA sequence
+* converted to 0-3.
+**/
 
 class Sequence
 {

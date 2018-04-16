@@ -73,7 +73,7 @@ if __name__ == "__main__":
 	import os
 
 	id = str(uuid.uuid4())
-	if not (sys.platform == "linux" or sys.platform == "linux2") or not (sys.maxsize > 2 ** 32):
+	if not sys.platform.startswith('linux') or not (sys.maxsize > 2 ** 32):
 		raise Exception("Multi-SpaM currently works only on 64-bit linux!")
 	opts = build_opts()
 

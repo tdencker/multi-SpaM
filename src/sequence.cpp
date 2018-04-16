@@ -12,21 +12,21 @@
  *
  */
 
-#include <algorithm>
-#include <exception>
-#include <vector>
-#include <fstream>
-#include <iostream>
-#include <unordered_map>
-#include <limits>
-#include <cassert>
 #include "sequence.hpp"
+
+/**
+* @brief Reads sequences from a FASTA file. Calls the Sequence constructor to create the returned Sequence vector.
+* Throws if the file could not be found.
+**/
 
 std::vector<Sequence> Sequence::read(std::string & file_name, bool verbose)
 {
 	std::vector<Sequence> sequences;
 	std::ifstream infile(file_name.c_str());
-	assert(infile.is_open());
+	if(infile.is_open() == false)
+	{
+		throw std::runtime_error("File " + file_name + " could not be opened!");
+	}
 	std::string line;
 	std::string header;
 	std::getline(infile, line, '>');
@@ -41,8 +41,17 @@ std::vector<Sequence> Sequence::read(std::string & file_name, bool verbose)
 	return sequences;
 }
 
+/**
+* @brief Constructor of the sequence Seq: Seq.id is the header and seq.content is the DNA sequence converted to 0-3.
+* This functions throws if header is empty or if the sequence is not a DNA sequence.
+**/
+
 Sequence::Sequence(std::string header, std::string & seq) : id(header)
 {
+	if(id.size() == 0)
+	{
+		throw std::runtime_error("Empty header detected!");
+	}
 	std::unordered_map<char,char> map;
 	map['A'] = 0;
 	map['C'] = 1;
@@ -60,7 +69,6 @@ Sequence::Sequence(std::string header, std::string & seq) : id(header)
                 content.push_back(std::numeric_limits<char>::max());
 		}
 	}
-	content.shrink_to_fit();
 
 	size_t test_length = std::min(content.size(), (size_t) 100);
 	if( std::count_if(content.begin(), content.begin() + test_length, 

@@ -56,7 +56,6 @@ def build_id_map(filename):
 
 def fix_tree(tree_file, id_map, out_file):
 	import re
-	print(id_map)
 	with open(tree_file) as file, open(out_file, "w+") as out:
 		for line in file:
 			parts = re.split('(,|\(|\)|;)',line)

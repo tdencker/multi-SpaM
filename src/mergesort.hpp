@@ -15,6 +15,11 @@
 #ifndef MERGESORT_HPP_
 #define MERGESORT_HPP_
 
+/**
+* @brief mergesort implementation using omp. Without omp and on windows (visual studio omp version is too low for omp task)
+* it defaults to std::sort
+**/
+
 #if defined(_OPENMP) && !defined(_WIN32)
 #include <algorithm>
 #include <omp.h>

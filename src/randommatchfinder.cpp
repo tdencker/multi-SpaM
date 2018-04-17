@@ -35,6 +35,7 @@ RandomMatchFinder::RandomMatchFinder(std::vector<Word> & sorted_array, int threa
 }
 
 int8_t score_mat[16] = { 91, -114, -31, -123, -114, 100, -125, -31, -31, -125, 100, -114, -123, -31, -114, 91};
+constexpr int max_iterations = 10000;
 
 // TODO: backup strategy if there are too many reruns (to prevent stack overflow errors)
 PseudoAlignment RandomMatchFinder::next(const Pattern & p, int nbr_sequences)
@@ -60,7 +61,9 @@ PseudoAlignment RandomMatchFinder::next(const Pattern & p, int nbr_sequences)
 		{
 			repeat = false;
 		}
-		if(iterations++ > 10000)
+#pragma omp atomic
+		mspamstats::total_iterations++;
+		if(iterations++ > max_iterations)
 			throw std::exception();
 	}
 
@@ -93,8 +96,6 @@ PseudoAlignment RandomMatchFinder::next(const Pattern & p, int nbr_sequences)
 	        {
 	        	continue;
 	        }
-	        #pragma omp atomic
-	        stats::score_computations++;
 	        const int step_seq1 = (_start + i)->revComp() ? -1 : 1;
 	        const int step_seq2 = (_start + j)->revComp() ? -1 : 1;
 	        constexpr int alphabet_size = 4;
@@ -110,6 +111,10 @@ PseudoAlignment RandomMatchFinder::next(const Pattern & p, int nbr_sequences)
 	        if(score >= options::min_score)
 	        {
 	            components[i].getComponent().merge(components[j].getComponent());
+	        }else
+	        {
+#pragma omp atomic
+	        	mspamstats::random_matches++;
 	        }
 	    }
 	}
@@ -120,9 +125,6 @@ PseudoAlignment RandomMatchFinder::next(const Pattern & p, int nbr_sequences)
 		if(e.size() >= options::min_sequences)
 			cnt++;
 	}
-	if(cnt > 1)
-	    #pragma omp atomic
-		stats::multiple_components++;
 		
 	components.erase(std::remove_if(components.begin(), components.end(), [](Component & c)
 		{ return c.size() < options::min_sequences; }), components.end());

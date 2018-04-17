@@ -23,6 +23,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include "stats.hpp"
 
 /**
 * @brief Sequence container class. ID is the header of the sequence as described in the FASTA file and CONTENT is the DNA sequence

@@ -43,8 +43,8 @@ void Component::removeUncertainties()
         {
             _words.erase(it);
             _total[w->getSeq()] = ambigious;
-            #pragma omp atomic
-            stats::ambigious_sequences++;
+#pragma omp atomic
+            mspamstats::ambigious_sequences++;
         }
         else
         {
@@ -52,20 +52,6 @@ void Component::removeUncertainties()
         }
     }
 }
-
-// void Component::removeUncertainties() // not realy >:)
-// {
-//     std::vector<int> count_vec(255, 0);
-
-//     std::random_shuffle(_words.begin(), _words.end());
-//     _words.erase(std::remove_if(_words.begin(), _words.end(), 
-//         [&](const std::vector<Word>::iterator & w)
-//         {
-//             count_vec[w->getSeq()]++;
-//             return count_vec[w->getSeq()] > 1;
-//         })
-//         , _words.end());
-// }
 
 unsigned Component::countSequences() const
 {

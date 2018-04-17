@@ -21,6 +21,11 @@
 #include "stats.hpp"
 #include "word.hpp"
 
+/**
+* @brief Runs RAxML and writes the resulting quartet trees in the outfile. For more detail, see
+* raxmlwrapper.hpp.
+**/
+
 class Component
 {
     public:

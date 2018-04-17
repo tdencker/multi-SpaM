@@ -66,7 +66,10 @@ Sequence::Sequence(std::string header, std::string & seq) : id(header)
 			if(map.count(c) > 0)
 				content.push_back(map[c]);
             else
+            {
+            	mspamstats::bad_characters++;
                 content.push_back(std::numeric_limits<char>::max());
+            }
 		}
 	}
 

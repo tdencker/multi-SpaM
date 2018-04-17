@@ -22,23 +22,22 @@
  *
  */
 
+#include <algorithm>
+#include <cassert>
+#include <chrono>
+#include <climits>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <memory>
+#include <numeric>
 #include <string>
 #include <vector>
-#include <fstream>
-#include <iostream>
-#include <unordered_map>
-#include <map>
-#include <memory>
-#include <cassert>
-#include <algorithm>
-#include <iomanip>
-#include <climits>
-#include <chrono>
-#include <unordered_set>
-#include <sstream>
+
 #ifdef _OPENMP
 #include <omp.h>
 #endif
+
 #include "pattern.hpp"
 #include "sequence.hpp"
 #include "word.hpp"
@@ -49,8 +48,6 @@
 #include "stats.hpp"
 #include "raxmlwrapper.hpp"
 #include "randommatchfinder.hpp"
-
-#include <numeric>
 
 constexpr int steps = 5;
 constexpr int num_buckets = 256;
@@ -69,7 +66,6 @@ void RunRAxML(std::vector<PseudoAlignment> & pa_vec)
     
     // compute all quartets
     
-    uint64_t nbr_quartets = 0;
     #pragma omp parallel for schedule(dynamic)
     for(int i = 0; i < (int)pa_vec.size(); ++i)
     {
@@ -80,7 +76,7 @@ void RunRAxML(std::vector<PseudoAlignment> & pa_vec)
             << i << " / " << pa_vec.size() << " ( Length: " << pa_vec[i].getLength() << " )              " << std::flush;
 
         #pragma omp atomic
-        nbr_quartets += computeAndPrintBestQuartets(pa_vec[i],  out_file);
+        mspamstats::num_quartet_trees += computeAndPrintBestQuartets(pa_vec[i],  out_file);
     }
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> diff = end-start;
@@ -465,11 +461,12 @@ int main(int argc, char** argv)
     
     std::vector<PseudoAlignment> pa_vec = options::mem_save_mode ? 
         runMemSave(sequences, pattern_set) : runStandard(sequences, pattern_set);
+    mspamstats::num_quartet_blocks = pa_vec.size();
     
     // quartet calculation using raxml
     
     RunRAxML(pa_vec);
 
-    stats::printStats();
+    mspamstats::printStats();
 }
 

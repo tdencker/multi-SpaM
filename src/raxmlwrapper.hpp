@@ -28,6 +28,11 @@ inline int idx2code(PseudoAlignment & pa, int idx)
     return pa.getSeq(idx - 1);
 }
 
+/**
+* @brief RAxML does not free most of its large structs, so each run of RAxML would lead to memory leaks. This function frees
+* all the things that RAxML does not so that it can be used multiple times.
+**/
+
 void freeAllTheThings(analdef * adef, tree * tr, cruncheddata * cdta, rawdata * rdta)
 {
     // setuptree
@@ -118,6 +123,15 @@ void freeAllTheThings(analdef * adef, tree * tr, cruncheddata * cdta, rawdata * 
     rax_free(rdta);
 }
 
+/**
+* @brief This function runs RAxML to find the best quartet trees. It creates multiple structs required by RAxML and sets 
+* all the necessary options equal to the "-f q -m GTRGAMMA -p 12345" flags. It checks for multiple errors such as not having
+* all nucleotides in the quartet block or bad model errors. In the latter case, it restarts RAxML with the GTRCAT model which
+* requires a little more runtime. The results are written to the ostream out in the format 1,2|3,4 where 1-4 are indices of
+* the sequences used by this program.
+* @return the number of quartets written to file
+**/
+
 uint64_t computeAndPrintBestQuartets(PseudoAlignment & pa, std::ostream & out = std::cout, bool gamma_model = true)
 {
     analdef * adef          = (analdef *) rax_malloc(sizeof(analdef));
@@ -153,6 +167,7 @@ uint64_t computeAndPrintBestQuartets(PseudoAlignment & pa, std::ostream & out = 
         {
             if (*ptr == (std::numeric_limits<char>::max)())
             {
+                mspamstats::bad_character_error++;
                 return 0; // illegal character at the don't care positions
             }
             *ptr = meaningDNA[*ptr];
@@ -161,7 +176,7 @@ uint64_t computeAndPrintBestQuartets(PseudoAlignment & pa, std::ostream & out = 
     }
     if(std::count_if(count_vec.begin(), count_vec.end(), [&](int x){return x > 0;}) != target_count)
     {
-        std::cerr << "Discarding quartet because it does not contain all 4 nucleotides!" << std::endl;
+        mspamstats::not_all_nucleotides_error++;
         return 0;
     }
     getinput_end(adef, rdta, cdta, tr);
@@ -169,17 +184,17 @@ uint64_t computeAndPrintBestQuartets(PseudoAlignment & pa, std::ostream & out = 
     quartetResult * result_vec = computeQuartets(tr, adef, rdta, cdta);
     if(result_vec == nullptr)
     {
-        //std::cout << "Warning: bad model" << std::endl;
-        stats::bad_model_errors++;
+        mspamstats::bad_model_errors++;
         freeAllTheThings(adef, tr, cdta, rdta);
-        return computeAndPrintBestQuartets(pa, out, false);//0;
+        return computeAndPrintBestQuartets(pa, out, false);
     }
     
-    size_t i = 0;
-    for(; result_vec[i].a1 != -1; ++i)
+    uint64_t num_quartets = 0;
+    for(size_t i = 0; result_vec[i].a1 != -1; ++i)
     {
+        num_quartets++;
         int bestQuartet = -1;
-        double bestVal;
+        double bestVal = 0;
         if(result_vec[i].l1 > result_vec[i].l2 && result_vec[i].l1 > result_vec[i].l3)
         {
             bestVal = result_vec[i].l1;
@@ -199,16 +214,25 @@ uint64_t computeAndPrintBestQuartets(PseudoAlignment & pa, std::ostream & out = 
         #pragma omp critical
         switch(bestQuartet)
         {
-            case 1: out << idx2code(pa, result_vec[i].a1) << "," << idx2code(pa, result_vec[i].b1) << "|" << idx2code(pa, result_vec[i].c1) << "," << idx2code(pa, result_vec[i].d1) << ":" << score << std::endl; break;
-            case 2: out << idx2code(pa, result_vec[i].a2) << "," << idx2code(pa, result_vec[i].b2) << "|" << idx2code(pa, result_vec[i].c2) << "," << idx2code(pa, result_vec[i].d2) << ":" << score << std::endl; break;
-            case 3: out << idx2code(pa, result_vec[i].a3) << "," << idx2code(pa, result_vec[i].b3) << "|" << idx2code(pa, result_vec[i].c3) << "," << idx2code(pa, result_vec[i].d3) << ":" << score << std::endl; break;
-            case -1: stats::same_likelihood_errors++; break;
+            case 1: out << idx2code(pa, result_vec[i].a1) << "," 
+                << idx2code(pa, result_vec[i].b1) << "|" 
+                << idx2code(pa, result_vec[i].c1) << "," 
+                << idx2code(pa, result_vec[i].d1) << ":" << score << std::endl; break;
+            case 2: out << idx2code(pa, result_vec[i].a2) << "," 
+                << idx2code(pa, result_vec[i].b2) << "|" 
+                << idx2code(pa, result_vec[i].c2) << "," 
+                << idx2code(pa, result_vec[i].d2) << ":" << score << std::endl; break;
+            case 3: out << idx2code(pa, result_vec[i].a3) << "," 
+                << idx2code(pa, result_vec[i].b3) << "|" 
+                << idx2code(pa, result_vec[i].c3) << "," 
+                << idx2code(pa, result_vec[i].d3) << ":" << score << std::endl; break;
+            case -1: mspamstats::same_likelihood_errors++; num_quartets--; break;
             default: std::cerr << "There is no best quartet!" << std::endl;
         }
     }
     
     rax_free(result_vec);
     freeAllTheThings(adef, tr, cdta, rdta);
-    return i;
+    return num_quartets;
 }
 #endif

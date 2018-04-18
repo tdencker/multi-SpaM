@@ -9,7 +9,7 @@ DEPS = word.hpp sequence.hpp match.hpp pattern.hpp pseudoalignment.hpp pseudoali
 	util.hpp rhasbari/patternset.h rhasbari/variance.h options.hpp paindex.hpp stats.hpp randommatchfinder.hpp
 
 OBJS = multi-SpaM.o word.o options.o sequence.o quartetblock.o \
-component.o  stats.o randommatchfinder.o\
+component.o  stats.o randommatchfinder.o pattern.o\
 raxml/axml_extract.o raxml/mem_alloc.o raxml/models.o raxml/evaluateGenericSpecial.o raxml/searchAlgo.o \
 raxml/newviewGenericSpecial.o raxml/makenewzGenericSpecial.o raxml/evaluatePartialGenericSpecial.o \
 raxml/optimizeModel.o $(avx_obj) rasbhari/patternset.o rasbhari/variance.o

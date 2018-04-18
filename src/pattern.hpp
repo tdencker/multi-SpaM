@@ -21,43 +21,11 @@
 class Pattern
 {
 	public:
-	unsigned weight; // kinda superfluous
-	unsigned dontCare;
-	
-	Pattern(std::string && str)
-	{
-//		_matchPos.reserve(str.size());
-		_boolPattern.reserve(str.size());
-		for(unsigned k = 0; k < str.size(); ++k)
-		{
-			if(str[k] == '1')
-				_matchPos.push_back(k);
-			_boolPattern.push_back(str[k] == '1');
-		}
-		weight = _matchPos.size();
-		dontCare = _boolPattern.size() - weight;
-	}
-	
-	Pattern(std::string & str)
-	{
-//		_matchPos.reserve(str.size());
-		_boolPattern.reserve(str.size());
-		for(unsigned k = 0; k < str.size(); ++k)
-		{
-			if(str[k] == '1')
-				_matchPos.push_back(k);
-			_boolPattern.push_back(str[k] == '1');
-		}
-		weight = _matchPos.size();
-		dontCare = _boolPattern.size() - weight;
-	}
-	
-	const uint8_t & operator[] (size_t idx) const { return _matchPos[idx];}
-	
-	bool isMatch(const int & pos) const { return _boolPattern[pos];}
-	
-	int size() const { return weight + dontCare; }
-	
+	Pattern(std::string &);
+	Pattern(std::string &&);
+	const uint8_t & operator[] (size_t) const;
+	bool isMatch(const int & pos) const;
+	size_t size() const;
 	private:
 	std::vector<uint8_t> _matchPos;
 	std::vector<bool> _boolPattern;

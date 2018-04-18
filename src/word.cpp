@@ -85,7 +85,7 @@ Word::Word(Pattern & p, std::vector<char>::iterator it, int16_t seq, bool rev_co
 {
     const unsigned mask = mspamoptions::mask;
     const unsigned shift = mspamoptions::symbol_bits;
-	for(unsigned i = 0; i < p.weight; i++)
+	for(int i = 0; i < mspamoptions::weight; i++)
 	{
 		unsigned nuc = 0;
 		int offset = p[i];

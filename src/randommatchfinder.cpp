@@ -99,7 +99,7 @@ QuartetBlock RandomMatchFinder::next(const Pattern & p, int nbr_sequences)
 	        const int step_seq1 = (_start + i)->revComp() ? -1 : 1;
 	        const int step_seq2 = (_start + j)->revComp() ? -1 : 1;
 	        constexpr int alphabet_size = 4;
-	        for(int k = 0; k < p.size(); ++k, std::advance(pos_seq1, step_seq1), std::advance(pos_seq2, step_seq2))
+	        for(size_t k = 0; k < p.size(); ++k, std::advance(pos_seq1, step_seq1), std::advance(pos_seq2, step_seq2))
 	        {
 //	            if(p.isMatch(k))
 //	            {

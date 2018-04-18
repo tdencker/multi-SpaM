@@ -24,11 +24,11 @@ where the input file is a FASTA file containing multiple genomes. The output fil
 | :--- | :--- |
 | -i              | Input file in FASTA format |
 | -o              | Output file in newick format
-| -k / -w         | Weight of the pattern (i.e. the number of matching positions) [ can't be larger than 16 ] |
+| -w / -k         | Weight of the pattern (i.e. the number of matching positions) [ can't be larger than 16 ] |
 | -d              | Number of don't care positions (i.e. the number of positions that don't have to match) |
 | -t              | Number of threads used |
 | -n              | Number of sampled blocks |
-| --mem-save / -m | Memory save mode (higher runtime, but much less RAM usage for larger files) |
+| --mem-save | Memory save mode (higher runtime, but much less RAM usage for larger files) |
 
 
 **Tips:**

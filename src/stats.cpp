@@ -32,7 +32,7 @@ namespace mspamstats
     void printStats()
     {
         std::cout << std::endl << std::endl;
-        std::cout << "### STATS ###" << std::endl;
+        std::cout << "########################## STATS ###########################" << std::endl;
         std::cout << std::setw(50) << std::left << "Bad characters in input sequences: " << std::setw(10) 
         << std::right << bad_characters << std::endl;
         std::cout << std::setw(50) << std::left << "Random matches (score below threshold): " << std::setw(10) 
@@ -53,6 +53,6 @@ namespace mspamstats
         << std::right << same_likelihood_errors << std::endl;
         std::cout << std::setw(50) << std::left << "Number of quartet trees: " << std::setw(10) 
         << std::right << num_quartet_trees << std::endl;
-        std::cout << "#############" << std::endl << std::endl;
+        std::cout << "############################################################" << std::endl << std::endl;
     }
 }

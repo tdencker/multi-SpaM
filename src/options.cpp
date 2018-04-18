@@ -167,9 +167,9 @@ namespace mspamoptions
     
     void printParameters()
     {
-        constexpr int text_width = 30;
+        constexpr int text_width = 50;
         constexpr int par_width = 10;
-        std::cout << std::endl << "############## Parameters ##############" << std::endl
+        std::cout << std::endl << "######################## Parameters ########################" << std::endl
         << std::setw(text_width) << std::left << "Match positions (weight): " 
         << std::setw(par_width) << std::right << weight << std::endl
         << std::setw(text_width) << std::left << "Don't care positions: " 
@@ -179,6 +179,7 @@ namespace mspamoptions
         << std::setw(text_width) << std::left << "Threads: " 
         << std::setw(par_width) << std::right << num_threads << std::endl
         << std::setw(text_width) << std::left << "Number of samples: " 
-        << std::setw(par_width) << std::right << std::to_string(num_samples) << std::endl << std::endl;
+        << std::setw(par_width) << std::right << std::to_string(num_samples) << std::endl
+        << "############################################################" << std::endl << std::endl;
     }
 }

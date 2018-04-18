@@ -59,7 +59,7 @@ inline void PseudoAlignment::setSequenceKey()
 PseudoAlignment::PseudoAlignment(std::vector< std::vector<Word>::iterator > & vec, int pattern_length, uint64_t seq_key) 
     : _length(pattern_length), _seq_key(seq_key)
 {
-	assert(vec.size() >= options::min_sequences);
+	assert(vec.size() >= mspamoptions::min_sequences);
 	assert(vec.size() <= 32 );
 	_words.reserve(vec.size());
 	for(auto & it : vec)

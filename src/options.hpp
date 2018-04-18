@@ -20,24 +20,24 @@
 #include "getopt.h"
 #include <iomanip>
 
-namespace options
+namespace mspamoptions
 {	
 	extern int weight;
 	extern int dontcare;
-	extern int patterns;
+	extern int num_patterns;
 	extern unsigned mask;
 	extern unsigned symbol_bits;
 	extern int min_score;
 	extern unsigned min_sequences;
-	extern int threads;
-	extern unsigned nbr_samples;
+	extern int num_threads;
+	extern unsigned num_samples;
 	extern std::string input_file;
 	extern std::string output_file;
 	extern bool all_sequences;
     extern bool mem_save_mode;
+    extern bool show_stats;
     void parseParameters(int argc, char * argv[]);
     void printParameters();
-	void printError(std::string);
 }
 
 #endif

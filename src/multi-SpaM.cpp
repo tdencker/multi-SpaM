@@ -61,7 +61,7 @@ void RunRAxML(std::vector<PseudoAlignment> & pa_vec)
 {
     auto start = std::chrono::steady_clock::now();
     std::cout << "[Step 5 / " << steps << "] Calculating optimal quartet trees for block: " << std::flush;
-    std::ofstream out_file(options::output_file);
+    std::ofstream out_file(mspamoptions::output_file);
     assert(out_file.is_open());
     
     // compute all quartets
@@ -86,14 +86,14 @@ void RunRAxML(std::vector<PseudoAlignment> & pa_vec)
 }
 
 /**
-* @brief This function samples quartet blocks from the word vector until options::num_samples 
+* @brief This function samples quartet blocks from the word vector until mspamoptions::num_samples 
 * quartet blocks have been found. The sampling is done with the RandomMatchFinder.
 **/
 
 std::vector<PseudoAlignment> samplingPseudoAlignments(std::vector<Word> &words, Pattern & current_pattern, 
-    size_t nbr_sequences, unsigned & progress, int thread_id, int thread_num, bool mem_save = false)
+    size_t num_sequences, unsigned & progress, int thread_id, int thread_num, bool mem_save = false)
 {
-    unsigned limit = options::nbr_samples / options::patterns;
+    unsigned limit = mspamoptions::num_samples / mspamoptions::num_patterns;
 
     if (mem_save == true)
         limit /= num_buckets;
@@ -110,11 +110,11 @@ std::vector<PseudoAlignment> samplingPseudoAlignments(std::vector<Word> &words, 
         #pragma omp master
         if(progress % 100 == 0) // TODO: doesn't work well for many threads
             std::cout << "\r[Step 4 / " << steps << "] Sampling blocks ... Progress: " 
-            << progress << " / " << options::nbr_samples << std::flush;
+            << progress << " / " << mspamoptions::num_samples << std::flush;
 
         try
         {
-            pa_vec.push_back(rmf.next(current_pattern, nbr_sequences));
+            pa_vec.push_back(rmf.next(current_pattern, num_sequences));
         }
         catch(const std::exception & e)
         {
@@ -168,7 +168,7 @@ std::vector<Word> createSpacedWordsMemSave(std::vector<Sequence> & sequences, Pa
         auto & seq = sequences[i].content;
         for (auto it = seq.begin(); it != seq.end() - current_pattern.size() + 1; ++it)
         {
-            const unsigned shift = options::symbol_bits;
+            const unsigned shift = mspamoptions::symbol_bits;
             uint64_t key = 0;
             for (unsigned i = 0; i < 4; i++)
             {
@@ -197,8 +197,8 @@ std::vector<Word> createSpacedWordsMemSave(std::vector<Sequence> & sequences, Pa
         {
             for (auto it = seq.end() - 1; it != seq.begin() + current_pattern.size() - 2; --it)
             {
-                const unsigned mask = options::mask;
-                const unsigned shift = options::symbol_bits;
+                const unsigned mask = mspamoptions::mask;
+                const unsigned shift = mspamoptions::symbol_bits;
                 uint64_t key = 0;
                 for (unsigned i = 0; i < 4; i++)
                 {
@@ -400,11 +400,11 @@ std::vector<Sequence> readSequences()
 {
 	auto start = std::chrono::steady_clock::now();
 	std::cout << "[Step 1 / " << steps << "] Reading sequences." << std::flush;
-	std::vector<Sequence> sequences = Sequence::read(options::input_file, false);
-	if(options::all_sequences)
-		options::min_sequences = sequences.size();
+	std::vector<Sequence> sequences = Sequence::read(mspamoptions::input_file, false);
+	if(mspamoptions::all_sequences)
+		mspamoptions::min_sequences = sequences.size();
 	assert(sequences.size() < (std::numeric_limits<uint16_t>::max)());
-	assert(sequences.size() >= options::min_sequences);
+	assert(sequences.size() >= mspamoptions::min_sequences);
 	auto end = std::chrono::steady_clock::now();
 	std::chrono::duration<double> diff = end-start;
 	std::cout << "\r[Step 1 / " << steps << "] Read " << sequences.size() << " sequences in " << diff.count() << " seconds." << std::endl;
@@ -418,7 +418,7 @@ std::vector<Sequence> readSequences()
 inline void initOMP()
 {
     #ifdef _OPENMP
-	int threads = options::threads;
+	int threads = mspamoptions::num_threads;
 	omp_set_dynamic(0);
 	omp_set_num_threads(threads);
 	#endif
@@ -433,7 +433,7 @@ inline void initOMP()
 std::vector<Pattern> getPatternSet()
 {
     std::vector<Pattern> pattern_set;
-	variance var(options::patterns, options::weight, options::dontcare, options::dontcare);
+	variance var(mspamoptions::num_patterns, mspamoptions::weight, mspamoptions::dontcare, mspamoptions::dontcare);
 	var.Init(true, true, true, true, false, NULL);
 	var.Improve(500);
 	for(auto & e : var.GetPattern())
@@ -453,13 +453,13 @@ std::vector<Pattern> getPatternSet()
 
 int main(int argc, char** argv)
 {
-	options::parseParameters(argc, argv);
-    options::printParameters();
+	mspamoptions::parseParameters(argc, argv);
+    mspamoptions::printParameters();
 	initOMP();
 	std::vector<Sequence> sequences = readSequences();
     std::vector<Pattern> pattern_set = getPatternSet();
     
-    std::vector<PseudoAlignment> pa_vec = options::mem_save_mode ? 
+    std::vector<PseudoAlignment> pa_vec = mspamoptions::mem_save_mode ? 
         runMemSave(sequences, pattern_set) : runStandard(sequences, pattern_set);
     mspamstats::num_quartet_blocks = pa_vec.size();
     
@@ -467,6 +467,7 @@ int main(int argc, char** argv)
     
     RunRAxML(pa_vec);
 
-    mspamstats::printStats();
+    if(mspamoptions::show_stats == true)
+        mspamstats::printStats();
 }
 

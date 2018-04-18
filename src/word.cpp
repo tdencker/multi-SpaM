@@ -83,8 +83,8 @@ std::string Word::toString(unsigned length)
 Word::Word(Pattern & p, std::vector<char>::iterator it, int16_t seq, bool rev_comp) 
     :  m_pos(it), m_key(0), m_seq(seq), m_rev_comp(rev_comp)
 {
-    const unsigned mask = options::mask;
-    const unsigned shift = options::symbol_bits;
+    const unsigned mask = mspamoptions::mask;
+    const unsigned shift = mspamoptions::symbol_bits;
 	for(unsigned i = 0; i < p.weight; i++)
 	{
 		unsigned nuc = 0;

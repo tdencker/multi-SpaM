@@ -108,7 +108,7 @@ PseudoAlignment RandomMatchFinder::next(const Pattern & p, int nbr_sequences)
 	            int idx = *pos_seq1 * alphabet_size + *pos_seq2;
 	            score += score_mat[ idx ];
 	        }
-	        if(score >= options::min_score)
+	        if(score >= mspamoptions::min_score)
 	        {
 	            components[i].getComponent().merge(components[j].getComponent());
 	        }else
@@ -122,12 +122,12 @@ PseudoAlignment RandomMatchFinder::next(const Pattern & p, int nbr_sequences)
 	for(auto & e : components)
 	{
 	    e.removeUncertainties();
-		if(e.size() >= options::min_sequences)
+		if(e.size() >= mspamoptions::min_sequences)
 			cnt++;
 	}
 		
 	components.erase(std::remove_if(components.begin(), components.end(), [](Component & c)
-		{ return c.size() < options::min_sequences; }), components.end());
+		{ return c.size() < mspamoptions::min_sequences; }), components.end());
 
 	// choose component and extract 4 words
 	// then return pseudoalignment and "remove" the words from the array

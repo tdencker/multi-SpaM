@@ -23,11 +23,12 @@ def build_opts():
 	parser.add_argument("-i", metavar="<string>", type=str, help="[Required] Input file (multi-fasta file)", required=True)
 	parser.add_argument("-o", metavar="<string>", type=str, help="Output file (tree file in newick-format)", default="outtree")
 	parser.add_argument("-k", "-w", metavar="<int>", type=int, choices=range(6,17), help="weight of the pattern \
-	 	(the number of matching positions)", default=10, dest="k")
+	 	(the number of matching positions)", default=10, dest="w")
 	parser.add_argument("-d", metavar="<int>", type=check_positive, help="number of don't care positions in the pattern", default=100)
 	parser.add_argument("-n", metavar="<int>", type=check_positive, help="number of sampled quartet blocks", default=1000000)
 	parser.add_argument("-t", metavar="<int>", type=check_positive, help="number of threads", default=1)
-	parser.add_argument("-m", "--mem-save", help="memory saving mode", dest="m", action="store_true")
+	parser.add_argument("--mem-save", help="memory saving mode", dest="m", action="store_true")
+	parser.add_argument("--show-stats", help="additional stats (mostly for debugging)", dest="s", action="store_true")
 	parser.add_argument("-v", "--version", action="version", version='Multi-SpaM 1.0')
 
 	return parser.parse_args()
@@ -35,8 +36,11 @@ def build_opts():
 def build_arg_list(opts, tmp_file):
 	argl = ["./bin/multi-SpaM"]
 	if opts.m == True:
-		argl.append("-m")
+		argl.append("--mem-save")
 	del opts.m
+	if opts.s == True:
+		argl.append("--show-stats")
+	del opts.s
 	for opt in vars(opts):
 		argl.append("-" + opt)
 		argl.append(str(getattr(opts,opt)))

@@ -11,8 +11,8 @@
  * http://www.gnu.org/copyleft/gpl.html
  *
  */
-#ifndef PSEUDOALIGNMENT_HPP_
-#define PSEUDOALIGNMENT_HPP_
+#ifndef QUARTETBLOCK_HPP_
+#define QUARTETBLOCK_HPP_
 
 #include <vector>
 #include <string>
@@ -24,16 +24,16 @@
 
 #include <cassert> // remove me
 
-class PseudoAlignment
+class QuartetBlock
 {
 	public:
 	typedef std::vector<Word>::iterator iterator;
 
-	PseudoAlignment(std::vector< iterator > &, int, uint64_t);
-	PseudoAlignment(std::vector<Word> &&, int);
-    PseudoAlignment(int);
+	QuartetBlock(std::vector< iterator > &, int, uint64_t);
+	QuartetBlock(std::vector<Word> &&, int);
+    QuartetBlock(int);
 
-    bool operator<(const PseudoAlignment & other) const { return _seq_key < other._seq_key; }
+    bool operator<(const QuartetBlock & other) const { return _seq_key < other._seq_key; }
     
 	size_t size() const { return _words.size(); }
     
@@ -59,8 +59,8 @@ class PseudoAlignment
     void clear() { _words.clear(); } 
     inline void setSequenceKey();
     
-    PseudoAlignment::iterator begin() { return _words.begin(); }
-    PseudoAlignment::iterator end() { return _words.end(); }
+    QuartetBlock::iterator begin() { return _words.begin(); }
+    QuartetBlock::iterator end() { return _words.end(); }
     
     
     

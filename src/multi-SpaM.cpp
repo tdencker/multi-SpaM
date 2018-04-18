@@ -41,7 +41,7 @@
 #include "pattern.hpp"
 #include "sequence.hpp"
 #include "word.hpp"
-#include "pseudoalignment.hpp"
+#include "quartetblock.hpp"
 #include "rasbhari/variance.h"
 #include "options.hpp"
 #include "mergesort.hpp"
@@ -57,7 +57,7 @@ constexpr int num_buckets = 256;
 * raxmlwrapper.hpp.
 **/
 
-void RunRAxML(std::vector<PseudoAlignment> & pa_vec)
+void RunRAxML(std::vector<QuartetBlock> & qb_vec)
 {
     auto start = std::chrono::steady_clock::now();
     std::cout << "[Step 5 / " << steps << "] Calculating optimal quartet trees for block: " << std::flush;
@@ -67,16 +67,16 @@ void RunRAxML(std::vector<PseudoAlignment> & pa_vec)
     // compute all quartets
     
     #pragma omp parallel for schedule(dynamic)
-    for(int i = 0; i < (int)pa_vec.size(); ++i)
+    for(int i = 0; i < (int)qb_vec.size(); ++i)
     {
         #ifdef _OPENMP
         if(omp_get_thread_num() == 0)
         #endif
         std::cout << "\r[Step 5 / " << steps << "] Calculating optimal quartet trees for block: " 
-            << i << " / " << pa_vec.size() << " ( Length: " << pa_vec[i].getLength() << " )              " << std::flush;
+            << i << " / " << qb_vec.size() << " ( Length: " << qb_vec[i].getLength() << " )              " << std::flush;
 
         #pragma omp atomic
-        mspamstats::num_quartet_trees += computeAndPrintBestQuartets(pa_vec[i],  out_file);
+        mspamstats::num_quartet_trees += computeAndPrintBestQuartets(qb_vec[i],  out_file);
     }
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> diff = end-start;
@@ -90,7 +90,7 @@ void RunRAxML(std::vector<PseudoAlignment> & pa_vec)
 * quartet blocks have been found. The sampling is done with the RandomMatchFinder.
 **/
 
-std::vector<PseudoAlignment> samplingPseudoAlignments(std::vector<Word> &words, Pattern & current_pattern, 
+std::vector<QuartetBlock> samplingQuartetBlocks(std::vector<Word> &words, Pattern & current_pattern, 
     size_t num_sequences, unsigned & progress, int thread_id, int thread_num, bool mem_save = false)
 {
     unsigned limit = mspamoptions::num_samples / mspamoptions::num_patterns;
@@ -103,7 +103,7 @@ std::vector<PseudoAlignment> samplingPseudoAlignments(std::vector<Word> &words, 
 	auto start = std::chrono::steady_clock::now();
     
     RandomMatchFinder rmf(words, thread_id, thread_num);
-    std::vector<PseudoAlignment> pa_vec;
+    std::vector<QuartetBlock> qb_vec;
 
     while( progress < limit )
     {
@@ -114,7 +114,7 @@ std::vector<PseudoAlignment> samplingPseudoAlignments(std::vector<Word> &words, 
 
         try
         {
-            pa_vec.push_back(rmf.next(current_pattern, num_sequences));
+            qb_vec.push_back(rmf.next(current_pattern, num_sequences));
         }
         catch(const std::exception & e)
         {
@@ -129,7 +129,7 @@ std::vector<PseudoAlignment> samplingPseudoAlignments(std::vector<Word> &words, 
 	std::chrono::duration<double> diff = end-start;
     #pragma omp master
     std::cout << "\r[Step 4 / " << steps << "] Sampling blocks in " << diff.count() << " seconds.                            " << std::endl;
-    return pa_vec;
+    return qb_vec;
 }
 
 /**
@@ -298,9 +298,9 @@ std::vector<Word> createSpacedWords(std::vector<Sequence> & sequences, Pattern &
 * same amount of blocks as for the standard run.
 **/
 
-std::vector<PseudoAlignment> runMemSave(std::vector<Sequence> & sequences, std::vector<Pattern> & pattern_set)
+std::vector<QuartetBlock> runMemSave(std::vector<Sequence> & sequences, std::vector<Pattern> & pattern_set)
 {
-    std::vector<PseudoAlignment> pa_vec;
+    std::vector<QuartetBlock> qb_vec;
     unsigned progress = 0;
 
     for (auto current_pattern : pattern_set)
@@ -322,7 +322,7 @@ std::vector<PseudoAlignment> runMemSave(std::vector<Sequence> & sequences, std::
                 thread_num = omp_get_num_threads();
 #endif
 
-                std::vector<PseudoAlignment> thread_pa_vec = samplingPseudoAlignments(
+                std::vector<QuartetBlock> thread_qb_vec = samplingQuartetBlocks(
                     all_spaced_words, current_pattern, sequences.size(), progress, thread_id, thread_num, true);
 
                 // reduction of the index (if necessary)
@@ -330,19 +330,19 @@ std::vector<PseudoAlignment> runMemSave(std::vector<Sequence> & sequences, std::
                 {
                     if (thread_num > 1 || pattern_set.size() > 1)
                     {
-                        pa_vec.insert(pa_vec.end(), thread_pa_vec.begin(), thread_pa_vec.end());
+                        qb_vec.insert(qb_vec.end(), thread_qb_vec.begin(), thread_qb_vec.end());
                     }
                     else
                     {
-                        std::swap(thread_pa_vec, pa_vec);
+                        std::swap(thread_qb_vec, qb_vec);
                     }
                 } // end of critical
             } // end of parallel
         }
 
     }
-    assert(pa_vec.size() > 0);
-    return pa_vec;
+    assert(qb_vec.size() > 0);
+    return qb_vec;
 }
 
 /**
@@ -351,9 +351,9 @@ std::vector<PseudoAlignment> runMemSave(std::vector<Sequence> & sequences, std::
 * in the pattern set.
 **/
 
-std::vector<PseudoAlignment> runStandard(std::vector<Sequence> & sequences, std::vector<Pattern> & pattern_set)
+std::vector<QuartetBlock> runStandard(std::vector<Sequence> & sequences, std::vector<Pattern> & pattern_set)
 {
-    std::vector<PseudoAlignment> pa_vec;
+    std::vector<QuartetBlock> qb_vec;
     unsigned progress = 0;
 
     for (auto current_pattern : pattern_set)
@@ -371,7 +371,7 @@ std::vector<PseudoAlignment> runStandard(std::vector<Sequence> & sequences, std:
             thread_num = omp_get_num_threads();
 #endif
 
-            std::vector<PseudoAlignment> thread_pa_vec = samplingPseudoAlignments(
+            std::vector<QuartetBlock> thread_qb_vec = samplingQuartetBlocks(
                 all_spaced_words, current_pattern, sequences.size(), progress, thread_id, thread_num);
 
             // reduction of the index (if necessary)
@@ -379,17 +379,17 @@ std::vector<PseudoAlignment> runStandard(std::vector<Sequence> & sequences, std:
             {
                 if (thread_num > 1 || pattern_set.size() > 1)
                 {
-                    pa_vec.insert(pa_vec.end(), thread_pa_vec.begin(), thread_pa_vec.end());
+                    qb_vec.insert(qb_vec.end(), thread_qb_vec.begin(), thread_qb_vec.end());
                 }
                 else
                 {
-                    std::swap(thread_pa_vec, pa_vec);
+                    std::swap(thread_qb_vec, qb_vec);
                 }
             } // end of critical
         } // end of parallel
     }
-    assert(pa_vec.size() > 0);
-    return pa_vec;
+    assert(qb_vec.size() > 0);
+    return qb_vec;
 }
 
 /**
@@ -459,13 +459,13 @@ int main(int argc, char** argv)
 	std::vector<Sequence> sequences = readSequences();
     std::vector<Pattern> pattern_set = getPatternSet();
     
-    std::vector<PseudoAlignment> pa_vec = mspamoptions::mem_save_mode ? 
+    std::vector<QuartetBlock> qb_vec = mspamoptions::mem_save_mode ? 
         runMemSave(sequences, pattern_set) : runStandard(sequences, pattern_set);
-    mspamstats::num_quartet_blocks = pa_vec.size();
+    mspamstats::num_quartet_blocks = qb_vec.size();
     
     // quartet calculation using raxml
     
-    RunRAxML(pa_vec);
+    RunRAxML(qb_vec);
 
     if(mspamoptions::show_stats == true)
         mspamstats::printStats();

@@ -16,7 +16,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include "pseudoalignment.hpp"
+#include "quartetblock.hpp"
 #include "word.hpp"
 #include "stats.hpp"
 
@@ -36,7 +36,7 @@ static inline void reset(std::unordered_map<char,int> & map)
 		e.second = 0;
 }
 
-std::string PseudoAlignment::to_string(std::vector<Sequence> & sequences)
+std::string QuartetBlock::to_string(std::vector<Sequence> & sequences)
 {
     std::string str;
     str += "##################### Length: " + std::to_string(_length) + " ######################\n";
@@ -47,7 +47,7 @@ std::string PseudoAlignment::to_string(std::vector<Sequence> & sequences)
     return str;
 }
 
-inline void PseudoAlignment::setSequenceKey()
+inline void QuartetBlock::setSequenceKey()
 {
     _seq_key = 0;
     for(auto & e : _words)
@@ -56,7 +56,7 @@ inline void PseudoAlignment::setSequenceKey()
     }
 }
 
-PseudoAlignment::PseudoAlignment(std::vector< std::vector<Word>::iterator > & vec, int pattern_length, uint64_t seq_key) 
+QuartetBlock::QuartetBlock(std::vector< std::vector<Word>::iterator > & vec, int pattern_length, uint64_t seq_key) 
     : _length(pattern_length), _seq_key(seq_key)
 {
 	assert(vec.size() >= mspamoptions::min_sequences);
@@ -70,10 +70,10 @@ PseudoAlignment::PseudoAlignment(std::vector< std::vector<Word>::iterator > & ve
     });
 }
 
-PseudoAlignment::PseudoAlignment(std::vector<Word> && vec, int length) : _words(vec), _length(length)
+QuartetBlock::QuartetBlock(std::vector<Word> && vec, int length) : _words(vec), _length(length)
 {
     setSequenceKey();
 }
 
-PseudoAlignment::PseudoAlignment(int length) : _length(length), _seq_key(0)
+QuartetBlock::QuartetBlock(int length) : _length(length), _seq_key(0)
 {}

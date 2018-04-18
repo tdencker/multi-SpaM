@@ -19,13 +19,13 @@ extern "C"
 {
 #include "raxml/axml_extract.h"
 }
-#include "pseudoalignment.hpp"
+#include "quartetblock.hpp"
 #include <vector>
 #include <iostream>
 
-inline int idx2code(PseudoAlignment & pa, int idx)
+inline int idx2code(QuartetBlock & qb, int idx)
 {
-    return pa.getSeq(idx - 1);
+    return qb.getSeq(idx - 1);
 }
 
 /**
@@ -132,14 +132,14 @@ void freeAllTheThings(analdef * adef, tree * tr, cruncheddata * cdta, rawdata * 
 * @return the number of quartets written to file
 **/
 
-uint64_t computeAndPrintBestQuartets(PseudoAlignment & pa, std::ostream & out = std::cout, bool gamma_model = true)
+uint64_t computeAndPrintBestQuartets(QuartetBlock & qb, std::ostream & out = std::cout, bool gamma_model = true)
 {
     analdef * adef          = (analdef *) rax_malloc(sizeof(analdef));
     tree * tr               = (tree *) rax_malloc(sizeof(tree));
     rawdata * rdta          = (rawdata *) rax_malloc(sizeof(rawdata));
     cruncheddata * cdta     = (cruncheddata *) rax_malloc(sizeof(cruncheddata));
-    rdta->numsp = pa.size();
-    rdta->sites = pa.getLength();
+    rdta->numsp = qb.size();
+    rdta->sites = qb.getLength();
     initAdef(adef);
     set_custom_options(adef, tr, 1000, gamma_model);
     getinput_begin(adef, rdta, cdta, tr);
@@ -153,17 +153,17 @@ uint64_t computeAndPrintBestQuartets(PseudoAlignment & pa, std::ostream & out = 
     std::vector<int> count_vec(256,0);
     constexpr int target_count = 4;
     
-    for(unsigned i = 0; i < pa.size(); ++i)
+    for(unsigned i = 0; i < qb.size(); ++i)
     {
-        if(pa.getRevComp(i))
+        if(qb.getRevComp(i))
         {
-            std::reverse_copy(pa.getPos(i) - pa.getLength(), pa.getPos(i), &rdta->y[i+1][1]);
+            std::reverse_copy(qb.getPos(i) - qb.getLength(), qb.getPos(i), &rdta->y[i+1][1]);
         }
         else
         {
-            std::copy(pa.getPos(i), pa.getPos(i) + pa.getLength(), &rdta->y[i+1][1]);
+            std::copy(qb.getPos(i), qb.getPos(i) + qb.getLength(), &rdta->y[i+1][1]);
         }
-        for(auto ptr = &rdta->y[i+1][1]; ptr <= &rdta->y[i+1][pa.getLength()]; ++ptr)
+        for(auto ptr = &rdta->y[i+1][1]; ptr <= &rdta->y[i+1][qb.getLength()]; ++ptr)
         {
             if (*ptr == (std::numeric_limits<char>::max)())
             {
@@ -186,7 +186,7 @@ uint64_t computeAndPrintBestQuartets(PseudoAlignment & pa, std::ostream & out = 
     {
         mspamstats::bad_model_errors++;
         freeAllTheThings(adef, tr, cdta, rdta);
-        return computeAndPrintBestQuartets(pa, out, false);
+        return computeAndPrintBestQuartets(qb, out, false);
     }
     
     uint64_t num_quartets = 0;
@@ -214,18 +214,18 @@ uint64_t computeAndPrintBestQuartets(PseudoAlignment & pa, std::ostream & out = 
         #pragma omp critical
         switch(bestQuartet)
         {
-            case 1: out << idx2code(pa, result_vec[i].a1) << "," 
-                << idx2code(pa, result_vec[i].b1) << "|" 
-                << idx2code(pa, result_vec[i].c1) << "," 
-                << idx2code(pa, result_vec[i].d1) << ":" << score << std::endl; break;
-            case 2: out << idx2code(pa, result_vec[i].a2) << "," 
-                << idx2code(pa, result_vec[i].b2) << "|" 
-                << idx2code(pa, result_vec[i].c2) << "," 
-                << idx2code(pa, result_vec[i].d2) << ":" << score << std::endl; break;
-            case 3: out << idx2code(pa, result_vec[i].a3) << "," 
-                << idx2code(pa, result_vec[i].b3) << "|" 
-                << idx2code(pa, result_vec[i].c3) << "," 
-                << idx2code(pa, result_vec[i].d3) << ":" << score << std::endl; break;
+            case 1: out << idx2code(qb, result_vec[i].a1) << "," 
+                << idx2code(qb, result_vec[i].b1) << "|" 
+                << idx2code(qb, result_vec[i].c1) << "," 
+                << idx2code(qb, result_vec[i].d1) << ":" << score << std::endl; break;
+            case 2: out << idx2code(qb, result_vec[i].a2) << "," 
+                << idx2code(qb, result_vec[i].b2) << "|" 
+                << idx2code(qb, result_vec[i].c2) << "," 
+                << idx2code(qb, result_vec[i].d2) << ":" << score << std::endl; break;
+            case 3: out << idx2code(qb, result_vec[i].a3) << "," 
+                << idx2code(qb, result_vec[i].b3) << "|" 
+                << idx2code(qb, result_vec[i].c3) << "," 
+                << idx2code(qb, result_vec[i].d3) << ":" << score << std::endl; break;
             case -1: mspamstats::same_likelihood_errors++; num_quartets--; break;
             default: std::cerr << "There is no best quartet!" << std::endl;
         }

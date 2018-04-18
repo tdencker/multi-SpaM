@@ -38,7 +38,7 @@ int8_t score_mat[16] = { 91, -114, -31, -123, -114, 100, -125, -31, -31, -125, 1
 constexpr int max_iterations = 10000;
 
 // TODO: backup strategy if there are too many reruns (to prevent stack overflow errors)
-PseudoAlignment RandomMatchFinder::next(const Pattern & p, int nbr_sequences)
+QuartetBlock RandomMatchFinder::next(const Pattern & p, int nbr_sequences)
 {
 	// choose a spaced word in the array
 	// set _start and _end accordingly
@@ -80,7 +80,7 @@ PseudoAlignment RandomMatchFinder::next(const Pattern & p, int nbr_sequences)
 	    for(int j = i + 1; j < size; ++j)
 	    {
 	        // Same sequences = match not possible
-	        // Same component = even if score is negative, it will be in the same pseudoalignment, so no need to compute
+	        // Same component = even if score is negative, it will be in the same QuartetBlock, so no need to compute
 	        if( (_start + i)->getSeq() == (_start + j)->getSeq() 
 	            || &components[i].getComponent() == &components[j].getComponent() )
 	        {
@@ -130,7 +130,7 @@ PseudoAlignment RandomMatchFinder::next(const Pattern & p, int nbr_sequences)
 		{ return c.size() < mspamoptions::min_sequences; }), components.end());
 
 	// choose component and extract 4 words
-	// then return pseudoalignment and "remove" the words from the array
+	// then return QuartetBlock and "remove" the words from the array
 	// if there are no components, "remove" all words and rerun the functions to check another spaced word
 
 	if(components.size() == 0)
@@ -139,14 +139,14 @@ PseudoAlignment RandomMatchFinder::next(const Pattern & p, int nbr_sequences)
 		goto backup;
 	}
 
-	PseudoAlignment pa(p.size());
+	QuartetBlock qb(p.size());
 	int idx = rand() % components.size();
 	Component & comp = components[idx];
     idx = rand() % (comp.size() - 3);
     for(int i = 0; i < 4; ++i)
     {
-        pa.push_back(**(comp.begin() + idx + i));
+        qb.push_back(**(comp.begin() + idx + i));
         **(comp.begin() + idx + i) = Word(); // "remove" to prevent realloc
     }
-    return pa;
+    return qb;
 }

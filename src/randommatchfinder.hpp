@@ -20,7 +20,7 @@
 #include "component.hpp"
 #include "options.hpp"
 #include "pattern.hpp"
-#include "pseudoalignment.hpp"
+#include "quartetblock.hpp"
 #include "stats.hpp"
 #include "word.hpp"
 
@@ -28,7 +28,7 @@ class RandomMatchFinder
 {
 	public:
 	RandomMatchFinder(std::vector<Word> &, int, int);
-	PseudoAlignment next(const Pattern &, int);
+	QuartetBlock next(const Pattern &, int);
 	private:
 	std::vector<Word>::iterator _vec_start;
 	std::vector<Word>::iterator _start;

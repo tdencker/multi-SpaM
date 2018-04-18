@@ -14,15 +14,23 @@
 #ifndef QUARTETBLOCK_HPP_
 #define QUARTETBLOCK_HPP_
 
-#include <vector>
-#include <string>
+#include <algorithm>
+#include <cassert>
+#include <iomanip>
 #include <iostream>
+#include <string>
+#include <vector>
 #include "sequence.hpp"
+#include "stats.hpp"
 #include "word.hpp"
 
-#include <bitset>
 
-#include <cassert> // remove me
+/**
+* @brief This class contains the words that make up a quartet block. It is assumed that there is only one
+* Word per sequence. This class was previously used for more tasks and has, therefore, a bunch of convinience
+* functions. The words are copied from the original vector and can be deleted after pushing them into the quartet
+* block.
+**/
 
 class QuartetBlock
 {
@@ -33,43 +41,28 @@ class QuartetBlock
 	QuartetBlock(std::vector<Word> &&, int);
     QuartetBlock(int);
 
-    bool operator<(const QuartetBlock & other) const { return _seq_key < other._seq_key; }
-    
-	size_t size() const { return _words.size(); }
-    
+    void push_back(const Word & w);
+
+    // convenience functions
+    bool operator<(const QuartetBlock & other) const;
+	size_t size() const;
     uint64_t getSequenceKey() const;
-	
-	std::string getHeader(int idx, std::vector<Sequence> & sequences) { return sequences[_words[idx].getSeq()].id; }
-	
+	std::string getHeader(int idx, std::vector<Sequence> & );
 	std::string to_string(std::vector<Sequence> &);
-	
-    void printFull(std::vector<Sequence> & sequences, std::ostream & out = std::cout)
-    {
-        for(auto & w : _words)
-        {
-            out << ">" << sequences[w.getSeq()].id << std::endl;
-            out << w.toString(_length) << std::endl;
-        }
-    }
-	std::vector<char>::iterator getPos(int idx) const { return _words[idx].getPos(); }
-	int getLength() const { return _length;}
-	int getSeq(int idx) const { return _words[idx].getSeq(); }
-	bool getRevComp(int idx) const { return _words[idx].revComp(); }
-	
-    void clear() { _words.clear(); } 
-    inline void setSequenceKey();
+	std::vector<char>::iterator getPos(int idx) const;
+	int getLength() const;
+	int getSeq(int idx) const;
+	bool getRevComp(int idx) const;
+    void clear();
+    void setSequenceKey();
     
-    QuartetBlock::iterator begin() { return _words.begin(); }
-    QuartetBlock::iterator end() { return _words.end(); }
-    
-    
-    
-    void push_back(const Word & w) { _seq_key |= 1 << w.getSeq(); _words.push_back(w); }
-    
+    QuartetBlock::iterator begin();
+    QuartetBlock::iterator end();
+
 	private:
-	std::vector<Word> _words;
-	int _length;
-	uint64_t _seq_key;
+	std::vector<Word> m_words;
+	int m_length;
+	uint64_t m_seq_key;
 };
 
 #endif

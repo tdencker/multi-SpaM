@@ -22,8 +22,8 @@
 #include "word.hpp"
 
 /**
-* @brief Runs RAxML and writes the resulting quartet trees in the outfile. For more detail, see
-* raxmlwrapper.hpp.
+* @brief Mostly a legacy class. Mostly just a QuartetBlock light. Used in the RandomMatchFinder class.
+* It is a union find datastructure but no longer used that way.
 **/
 
 class Component
@@ -31,34 +31,18 @@ class Component
     public:
     typedef std::vector< std::vector<Word>::iterator >::iterator component_iter;
 	Component(const std::vector<Word>::iterator &, int);
-	Component(const std::vector<Word>::iterator & first, int count, int n); // remove after testing
 	unsigned countSequences() const;
 	void merge(Component &);
 	Component & getComponent();
-	
-	// testing
-	
-	void setComponent(Component & comp)
-	{
-	    _component = &comp;
-	}
-
-	void erase(component_iter first, component_iter last)
-	{
-		assert(first >= _words.begin() && last <= _words.end());
-		_words.erase(first, last);
-	}
-	
-	
 	void removeUncertainties();
 	size_t size() const;
 	component_iter begin();
 	component_iter end();
 	void erase(component_iter);
 	private:
-	std::vector<unsigned> _total;
-	std::vector< std::vector<Word>::iterator > _words;
-	Component * _component;
+	std::vector<unsigned> m_total;
+	std::vector< std::vector<Word>::iterator > m_words;
+	Component * m_component;
 	static constexpr int ambigious = 0;
 };
 

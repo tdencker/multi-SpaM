@@ -24,6 +24,13 @@
 #include "stats.hpp"
 #include "word.hpp"
 
+/**
+* @brief This class is used to sample QuartetBlocks at random. It will divide the (sorted) vector
+* in <number threads> parts. The constructor needs to be called by every thread. The next function
+* will provide QuartetBlocks until it can't find more in which case it will throw an exception.
+* Words that were used for QuartetBlocks are overwritten by "dummy" words.
+**/
+
 class RandomMatchFinder
 {
 	public:

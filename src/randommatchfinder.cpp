@@ -14,6 +14,10 @@
 
 #include "randommatchfinder.hpp"
 
+/**
+* @brief The vector has to be sorted. It will divide the range according to the thread id/num.
+**/
+
 RandomMatchFinder::RandomMatchFinder(std::vector<Word> & sorted_array, int thread_id, int thread_num)
 {
     float x = (float) thread_id / thread_num;
@@ -37,7 +41,16 @@ RandomMatchFinder::RandomMatchFinder(std::vector<Word> & sorted_array, int threa
 int8_t score_mat[16] = { 91, -114, -31, -123, -114, 100, -125, -31, -31, -125, 100, -114, -123, -31, -114, 91};
 constexpr int max_iterations = 10000;
 
-// TODO: backup strategy if there are too many reruns (to prevent stack overflow errors)
+/**
+* @brief This function selects a Word at random and checks for the range of Words that have the same hash/key.
+* Among those words, random words are selected and a score is computed. If there are 3 words with a positive
+* score, the QuartetBlock is returned. The words used are replaced with a "dummy" word.
+*
+* It will throw if max_iterations iterations have happened, i.e. either a Dummy word has been hit, there are 
+* less than 4 words left with that key or there were not enough words in 4 sequences that have a positive score
+* with the initial word.
+**/
+
 QuartetBlock RandomMatchFinder::next(const Pattern & p, int nbr_sequences)
 {
 	// choose a spaced word in the array
@@ -64,7 +77,7 @@ QuartetBlock RandomMatchFinder::next(const Pattern & p, int nbr_sequences)
 #pragma omp atomic
 		mspamstats::total_iterations++;
 		if(iterations++ > max_iterations)
-			throw std::exception();
+			throw std::runtime_error("maximum number of iterations reached.");
 	}
 
 	std::vector<Component> components;

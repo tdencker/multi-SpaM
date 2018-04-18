@@ -14,35 +14,27 @@
 #include "component.hpp"
 
 Component::Component(const std::vector<Word>::iterator & first, int n)
-    : _total(n,0),
-    _component(this)
+    : m_total(n,0),
+    m_component(this)
 {
-    _words.push_back(first);
-    _total[first->getSeq()]++;
+    m_words.push_back(first);
+    m_total[first->getSeq()]++;
 }
 
-Component::Component(const std::vector<Word>::iterator & first, int count, int n)
-    : _total(n,0),
-    _component(this)
-{
-    auto it = first;
-    for(int i = 0; i < count; ++i)
-    {
-        _words.push_back(it);
-        _total[it->getSeq()]++;
-        it++;
-    }
-}
+/**
+* @brief Removes all words that are from sequences which have more than 1 word
+* in this instance.
+**/
 
 void Component::removeUncertainties()
 {
-    for(auto it = _words.begin(); it != _words.end();)
+    for(auto it = m_words.begin(); it != m_words.end();)
     {
         auto & w = *it;
-        if(_total[w->getSeq()] > 1 || _total[w->getSeq()] == ambigious)
+        if(m_total[w->getSeq()] > 1 || m_total[w->getSeq()] == ambigious)
         {
-            _words.erase(it);
-            _total[w->getSeq()] = ambigious;
+            m_words.erase(it);
+            m_total[w->getSeq()] = ambigious;
 #pragma omp atomic
             mspamstats::ambigious_sequences++;
         }
@@ -55,51 +47,59 @@ void Component::removeUncertainties()
 
 unsigned Component::countSequences() const
 {
-	return std::count_if(_total.begin(), _total.end(), [](int x){return x > 0;});
+	return std::count_if(m_total.begin(), m_total.end(), [](int x){return x > 0;});
 }
 
 size_t Component::size() const
 {
-    return _words.size();
+    return m_words.size();
 }
 
 Component::component_iter Component::begin()
 {
-    return _words.begin();
+    return m_words.begin();
 }
 
 Component::component_iter Component::end()
 {
-    return _words.end();
+    return m_words.end();
 }
 
 void Component::erase(component_iter pos)
 {
-    _words.erase(pos);
+    m_words.erase(pos);
 }
+
+/**
+* @brief Find function for the union find structure.
+**/
 
 Component & Component::getComponent()
 {
-	while( _component != _component->_component)
+	while( m_component != m_component->m_component)
 	{
-		_component = _component->_component;
+		m_component = m_component->m_component;
 	} 
-	return *_component; 
+	return *m_component; 
 }
+
+/**
+* @brief Union function for the union find structure.
+**/
 
 void Component::merge(Component & other)
 {
-    assert(other._words.empty() == false);
-    assert(this->_words.empty() == false);
+    assert(other.m_words.empty() == false);
+    assert(this->m_words.empty() == false);
     // already in the same component
 	if(&other == this)
 		return;
 	// keep the larger component
-	Component & merging_from = this->_words.size() >= other._words.size() ? other : *this;
-	Component & merging_into = this->_words.size() >= other._words.size() ? *this : other;
-	merging_into._words.insert(merging_into._words.end(), merging_from._words.begin(), merging_from._words.end());
-	for(unsigned i = 0; i < _total.size(); ++i)
-		merging_into._total[i] += merging_from._total[i];
-	merging_from._component = merging_into._component;
-	merging_from._words.clear();
+	Component & merging_from = this->m_words.size() >= other.m_words.size() ? other : *this;
+	Component & merging_into = this->m_words.size() >= other.m_words.size() ? *this : other;
+	merging_into.m_words.insert(merging_into.m_words.end(), merging_from.m_words.begin(), merging_from.m_words.end());
+	for(unsigned i = 0; i < m_total.size(); ++i)
+		merging_into.m_total[i] += merging_from.m_total[i];
+	merging_from.m_component = merging_into.m_component;
+	merging_from.m_words.clear();
 }

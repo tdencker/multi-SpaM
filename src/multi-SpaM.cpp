@@ -98,6 +98,7 @@ std::vector<QuartetBlock> samplingQuartetBlocks(std::vector<Word> &words, Patter
 
     if (mem_save == true)
     {
+        progress = 0;
         limit = std::ceil(limit / num_buckets);
     }
 

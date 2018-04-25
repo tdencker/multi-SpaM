@@ -15,25 +15,27 @@
 #ifndef PATTERN_HPP_
 #define PATTERN_HPP_
 
-#include <vector>
 #include <string>
+#include <vector>
 
 /**
-* @brief Class for the binary pattern. A `1` denotes a matching position and a `0` denotes 
+* @brief Class for the binary pattern. A `1` denotes a matching position and a
+*`0` denotes
 * a don't care positions. At these positions, mismatches are allowed.
 **/
 
 class Pattern
 {
-	public:
-	Pattern(std::string &);
-	Pattern(std::string &&);
-	const uint8_t & operator[] (size_t) const;
-	bool isMatch(const int & pos) const;
-	size_t size() const;
-	private:
-	std::vector<uint8_t> m_matchPos;
-	std::vector<bool> m_boolPattern;
+  public:
+    Pattern( std::string & );
+    Pattern( std::string && );
+    const uint8_t & operator[]( size_t ) const;
+    bool isMatch( const int & pos ) const;
+    size_t size() const;
+
+  private:
+    std::vector<uint8_t> m_matchPos;
+    std::vector<bool> m_boolPattern;
 };
 
 #endif

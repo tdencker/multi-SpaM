@@ -25,33 +25,33 @@
 #include <string>
 #include <vector>
 
- /**
- * @brief The Word class contains the spaced word (a 32-bit integer hash),
- * the position as an iterator, the sequence number and wether it is 
- * reverse complement or not. The default constructor produces a dummy word
- * which is used to mark "removed" words.
- **/
+/**
+* @brief The Word class contains the spaced word (a 32-bit integer hash),
+* the position as an iterator, the sequence number and wether it is
+* reverse complement or not. The default constructor produces a dummy word
+* which is used to mark "removed" words.
+**/
 
 class Word
 {
-	public:
+  public:
     Word();
-	Word(Pattern & p, std::vector<char>::iterator , int16_t , bool ); 
-	bool revComp() const;
+    Word( Pattern & p, std::vector<char>::iterator, int16_t, bool );
+    bool revComp() const;
     bool isDummy() const;
-	char operator[](const int & ) const;
-	bool operator<(const Word & ) const;
-	bool operator==(const Word & ) const;
-	int getSeq() const;
-	uint32_t getKey() const;
-	std::vector<char>::iterator getPos() const;
-	std::string toString(unsigned);
-    
-	private:
-	std::vector<char>::iterator m_pos;
-	uint32_t m_key;
-	int16_t m_seq;
-	bool m_rev_comp;
+    char operator[]( const int & ) const;
+    bool operator<( const Word & ) const;
+    bool operator==( const Word & ) const;
+    int getSeq() const;
+    uint32_t getKey() const;
+    std::vector<char>::iterator getPos() const;
+    std::string toString( unsigned );
+
+  private:
+    std::vector<char>::iterator m_pos;
+    uint32_t m_key;
+    int16_t m_seq;
+    bool m_rev_comp;
     static std::vector<char> dummy_vec;
 };
 

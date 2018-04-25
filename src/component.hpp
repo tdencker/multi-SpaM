@@ -14,36 +14,38 @@
 #ifndef COMPONENT_HPP_
 #define COMPONENT_HPP_
 
-#include <algorithm>
-#include <cassert>
-#include <vector>
 #include "options.hpp"
 #include "stats.hpp"
 #include "word.hpp"
+#include <algorithm>
+#include <cassert>
+#include <vector>
 
 /**
-* @brief Mostly a legacy class. Mostly just a QuartetBlock light. Used in the RandomMatchFinder class.
-* It is a union find datastructure but no longer used that way.
+* @brief Mostly a legacy class. Mostly just a QuartetBlock light. Used in the
+* RandomMatchFinder class. It is a union find datastructure but no longer used
+* that way.
 **/
 
 class Component
 {
-    public:
-    typedef std::vector< std::vector<Word>::iterator >::iterator component_iter;
-	Component(const std::vector<Word>::iterator &, int);
-	unsigned countSequences() const;
-	void merge(Component &);
-	Component & getComponent();
-	void removeUncertainties();
-	size_t size() const;
-	component_iter begin();
-	component_iter end();
-	void erase(component_iter);
-	private:
-	std::vector<unsigned> m_total;
-	std::vector< std::vector<Word>::iterator > m_words;
-	Component * m_component;
-	static constexpr int ambigious = 0;
+  public:
+    typedef std::vector<std::vector<Word>::iterator>::iterator component_iter;
+    Component( const std::vector<Word>::iterator &, int );
+    unsigned countSequences() const;
+    void merge( Component & );
+    Component & getComponent();
+    void removeUncertainties();
+    size_t size() const;
+    component_iter begin();
+    component_iter end();
+    void erase( component_iter );
+
+  private:
+    std::vector<unsigned> m_total;
+    std::vector<std::vector<Word>::iterator> m_words;
+    Component * m_component;
+    static constexpr int ambigious = 0;
 };
 
 #endif

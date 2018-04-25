@@ -15,28 +15,28 @@
 #ifndef SEQUENCE_HPP_
 #define SEQUENCE_HPP_
 
+#include "stats.hpp"
 #include <algorithm>
 #include <exception>
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <limits>
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include "stats.hpp"
 
 /**
-* @brief Sequence container class. ID is the header of the sequence as described in the FASTA file and CONTENT is the DNA sequence
-* converted to 0-3.
+* @brief Sequence container class. ID is the header of the sequence as described
+* in the FASTA file and CONTENT is the DNA sequence converted to 0-3.
 **/
 
 class Sequence
 {
-	public:
-	std::vector<char> content;
-	std::string id;
-	static std::vector<Sequence> read(std::string &,bool = false);
-	Sequence(std::string, std::string &);
+  public:
+    std::vector<char> content;
+    std::string id;
+    static std::vector<Sequence> read( std::string &, bool = false );
+    Sequence( std::string, std::string & );
 };
 
 #endif

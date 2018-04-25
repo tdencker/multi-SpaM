@@ -14,26 +14,26 @@
 
 #include "pattern.hpp"
 
-Pattern::Pattern(std::string && str)
+Pattern::Pattern( std::string && str )
 {
-	m_boolPattern.reserve(str.size());
-	for(unsigned k = 0; k < str.size(); ++k)
-	{
-		if(str[k] == '1')
-			m_matchPos.push_back(k);
-		m_boolPattern.push_back(str[k] == '1');
-	}
+    m_boolPattern.reserve( str.size() );
+    for ( unsigned k = 0; k < str.size(); ++k )
+    {
+        if ( str[k] == '1' )
+            m_matchPos.push_back( k );
+        m_boolPattern.push_back( str[k] == '1' );
+    }
 }
 
-Pattern::Pattern(std::string & str)
+Pattern::Pattern( std::string & str )
 {
-	m_boolPattern.reserve(str.size());
-	for(unsigned k = 0; k < str.size(); ++k)
-	{
-		if(str[k] == '1')
-			m_matchPos.push_back(k);
-		m_boolPattern.push_back(str[k] == '1');
-	}
+    m_boolPattern.reserve( str.size() );
+    for ( unsigned k = 0; k < str.size(); ++k )
+    {
+        if ( str[k] == '1' )
+            m_matchPos.push_back( k );
+        m_boolPattern.push_back( str[k] == '1' );
+    }
 }
 
 /**
@@ -43,9 +43,9 @@ Pattern::Pattern(std::string & str)
 * in the pattern.
 **/
 
-const uint8_t & Pattern::operator[] (size_t idx) const 
+const uint8_t & Pattern::operator[]( size_t idx ) const
 {
-	return m_matchPos[idx];
+    return m_matchPos[idx];
 }
 
 /**
@@ -53,9 +53,9 @@ const uint8_t & Pattern::operator[] (size_t idx) const
 * in the binary pattern.
 **/
 
-bool Pattern::isMatch(const int & pos) const 
+bool Pattern::isMatch( const int & pos ) const
 {
-	return m_boolPattern[pos];
+    return m_boolPattern[pos];
 }
 
 /**
@@ -63,7 +63,7 @@ bool Pattern::isMatch(const int & pos) const
 * #don't care positions.
 **/
 
-size_t Pattern::size() const 
-{ 
-	return m_boolPattern.size();
+size_t Pattern::size() const
+{
+    return m_boolPattern.size();
 }

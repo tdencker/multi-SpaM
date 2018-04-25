@@ -16,45 +16,43 @@
 #define MERGESORT_HPP_
 
 /**
-* @brief mergesort implementation using omp. Without omp and on windows (visual studio omp version is too low for omp task)
+* @brief mergesort implementation using omp. Without omp and on windows (visual
+* studio omp version is too low for omp task)
 * it defaults to std::sort
 **/
 
-#if defined(_OPENMP) && !defined(_WIN32)
+#if defined( _OPENMP ) && !defined( _WIN32 )
 #include <algorithm>
 #include <omp.h>
 
-template<typename Iter>
-void mergeSortBody(Iter begin, Iter end, int n)
+template <typename Iter> void mergeSortBody( Iter begin, Iter end, int n )
 {
-    auto len = std::distance(begin, end);
-    if (len <= 1024 || n < 2)
+    auto len = std::distance( begin, end );
+    if ( len <= 1024 || n < 2 )
     {
-        std::sort(begin, end);
+        std::sort( begin, end );
         return;
     }
-    Iter mid = std::next(begin, len / 2);
+    Iter mid = std::next( begin, len / 2 );
 #pragma omp task
-    mergeSortBody(begin, mid, n - 2);
+    mergeSortBody( begin, mid, n - 2 );
 #pragma omp task
-    mergeSortBody(mid, end, n - 2);
+    mergeSortBody( mid, end, n - 2 );
 #pragma omp taskwait
-    std::inplace_merge(begin, mid, end);
+    std::inplace_merge( begin, mid, end );
 }
-template<typename Iter>
-void mergeSort(Iter begin, Iter end)
+template <typename Iter> void mergeSort( Iter begin, Iter end )
 {
 #pragma omp parallel
     {
 #pragma omp single
-        mergeSortBody(begin, end, omp_get_num_threads());
+        mergeSortBody( begin, end, omp_get_num_threads() );
     }
 }
 #else
-template<typename Iter>
-void mergeSort(Iter begin, Iter end)
+template <typename Iter> void mergeSort( Iter begin, Iter end )
 {
-    std::sort(begin, end);
+    std::sort( begin, end );
 }
 #endif
 

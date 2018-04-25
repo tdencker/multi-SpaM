@@ -15,33 +15,35 @@
 #ifndef RANDOMMATCHFINDER_HPP_
 #define RANDOMMATCHFINDER_HPP_
 
-//TODO:check
-#include <vector>
+// TODO:check
 #include "component.hpp"
 #include "options.hpp"
 #include "pattern.hpp"
 #include "quartetblock.hpp"
 #include "stats.hpp"
 #include "word.hpp"
+#include <vector>
 
 /**
-* @brief This class is used to sample QuartetBlocks at random. It will divide the (sorted) vector
-* in <number threads> parts. The constructor needs to be called by every thread. The next function
-* will provide QuartetBlocks until it can't find more in which case it will throw an exception.
+* @brief This class is used to sample QuartetBlocks at random. It will divide
+* the (sorted) vector in <number threads> parts. The constructor needs to be
+* called by every thread. The next function will provide QuartetBlocks until it
+* can't find more in which case it will throw an exception.
 * Words that were used for QuartetBlocks are overwritten by "dummy" words.
 **/
 
 class RandomMatchFinder
 {
-	public:
-	RandomMatchFinder(std::vector<Word> &, int, int);
-	QuartetBlock next(const Pattern &, int);
-	private:
-	std::vector<Word>::iterator _vec_start;
-	std::vector<Word>::iterator _start;
-	std::vector<Word>::iterator _end;
-	std::vector<Word>::iterator _vec_end;
-	std::vector<char> _dummy_vec;
+  public:
+    RandomMatchFinder( std::vector<Word> &, int, int );
+    QuartetBlock next( const Pattern &, int );
+
+  private:
+    std::vector<Word>::iterator _vec_start;
+    std::vector<Word>::iterator _start;
+    std::vector<Word>::iterator _end;
+    std::vector<Word>::iterator _vec_end;
+    std::vector<char> _dummy_vec;
 };
 
 #endif

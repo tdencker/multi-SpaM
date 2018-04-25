@@ -13,11 +13,10 @@
  */
 #include "component.hpp"
 
-Component::Component(const std::vector<Word>::iterator & first, int n)
-    : m_total(n,0),
-    m_component(this)
+Component::Component( const std::vector<Word>::iterator & first, int n )
+    : m_total( n, 0 ), m_component( this )
 {
-    m_words.push_back(first);
+    m_words.push_back( first );
     m_total[first->getSeq()]++;
 }
 
@@ -28,12 +27,12 @@ Component::Component(const std::vector<Word>::iterator & first, int n)
 
 void Component::removeUncertainties()
 {
-    for(auto it = m_words.begin(); it != m_words.end();)
+    for ( auto it = m_words.begin(); it != m_words.end(); )
     {
         auto & w = *it;
-        if(m_total[w->getSeq()] > 1 || m_total[w->getSeq()] == ambigious)
+        if ( m_total[w->getSeq()] > 1 || m_total[w->getSeq()] == ambigious )
         {
-            m_words.erase(it);
+            m_words.erase( it );
             m_total[w->getSeq()] = ambigious;
 #pragma omp atomic
             mspamstats::ambigious_sequences++;
@@ -47,7 +46,8 @@ void Component::removeUncertainties()
 
 unsigned Component::countSequences() const
 {
-	return std::count_if(m_total.begin(), m_total.end(), [](int x){return x > 0;});
+    return std::count_if( m_total.begin(), m_total.end(),
+                          []( int x ) { return x > 0; } );
 }
 
 size_t Component::size() const
@@ -65,9 +65,9 @@ Component::component_iter Component::end()
     return m_words.end();
 }
 
-void Component::erase(component_iter pos)
+void Component::erase( component_iter pos )
 {
-    m_words.erase(pos);
+    m_words.erase( pos );
 }
 
 /**
@@ -76,30 +76,34 @@ void Component::erase(component_iter pos)
 
 Component & Component::getComponent()
 {
-	while( m_component != m_component->m_component)
-	{
-		m_component = m_component->m_component;
-	} 
-	return *m_component; 
+    while ( m_component != m_component->m_component )
+    {
+        m_component = m_component->m_component;
+    }
+    return *m_component;
 }
 
 /**
 * @brief Union function for the union find structure.
 **/
 
-void Component::merge(Component & other)
+void Component::merge( Component & other )
 {
-    assert(other.m_words.empty() == false);
-    assert(this->m_words.empty() == false);
+    assert( other.m_words.empty() == false );
+    assert( this->m_words.empty() == false );
     // already in the same component
-	if(&other == this)
-		return;
-	// keep the larger component
-	Component & merging_from = this->m_words.size() >= other.m_words.size() ? other : *this;
-	Component & merging_into = this->m_words.size() >= other.m_words.size() ? *this : other;
-	merging_into.m_words.insert(merging_into.m_words.end(), merging_from.m_words.begin(), merging_from.m_words.end());
-	for(unsigned i = 0; i < m_total.size(); ++i)
-		merging_into.m_total[i] += merging_from.m_total[i];
-	merging_from.m_component = merging_into.m_component;
-	merging_from.m_words.clear();
+    if ( &other == this )
+        return;
+    // keep the larger component
+    Component & merging_from =
+        this->m_words.size() >= other.m_words.size() ? other : *this;
+    Component & merging_into =
+        this->m_words.size() >= other.m_words.size() ? *this : other;
+    merging_into.m_words.insert( merging_into.m_words.end(),
+                                 merging_from.m_words.begin(),
+                                 merging_from.m_words.end() );
+    for ( unsigned i = 0; i < m_total.size(); ++i )
+        merging_into.m_total[i] += merging_from.m_total[i];
+    merging_from.m_component = merging_into.m_component;
+    merging_from.m_words.clear();
 }

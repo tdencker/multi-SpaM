@@ -15,6 +15,12 @@
 #ifndef STATS_HPP_
 #define STATS_HPP_
 
+#include <cstdlib>
+#include <iomanip>
+#include <iostream>
+
+#include "options.hpp"
+
 /**
 * @brief Stats that can be used to identify problems with runtime or
 * the number of quartet trees for the final tree

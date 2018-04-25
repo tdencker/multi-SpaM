@@ -92,8 +92,7 @@ std::string Word::toString( unsigned length )
 * @param rev_comp - Reverse complement word?
 **/
 
-Word::Word( Pattern & p, std::vector<char>::iterator it, int16_t seq,
-            bool rev_comp )
+Word::Word( Pattern & p, std::vector<char>::iterator it, int16_t seq, bool rev_comp )
     : m_pos( it ), m_key( 0 ), m_seq( seq ), m_rev_comp( rev_comp )
 {
     const unsigned mask = mspamoptions::mask;
@@ -123,8 +122,7 @@ Word::Word( Pattern & p, std::vector<char>::iterator it, int16_t seq,
 * @brief Constructor of a "removed" word. Only useful for isDummy().
 **/
 
-Word::Word()
-    : m_pos( dummy_vec.begin() ), m_key( 0 ), m_seq( 0 ), m_rev_comp( false )
+Word::Word() : m_pos( dummy_vec.begin() ), m_key( 0 ), m_seq( 0 ), m_rev_comp( false )
 {
 }
 

@@ -63,8 +63,7 @@ patternset::patternset()
  * @param silent 		Boolean which (de)activates std::output on
  * commandline (exclusive errors)
  */
-patternset::patternset( uint32_t size, uint32_t weight, uint32_t min_dontcare,
-                        uint32_t max_dontcare, bool silent )
+patternset::patternset( uint32_t size, uint32_t weight, uint32_t min_dontcare, uint32_t max_dontcare, bool silent )
 {
     this->size = size;
     this->weight = weight;
@@ -270,8 +269,7 @@ std::vector<uint32_t> patternset::CreateLengths()
 
     if ( random_length )
     {
-        std::uniform_int_distribution<uint32_t> lengths( min_dontcare,
-                                                         max_dontcare );
+        std::uniform_int_distribution<uint32_t> lengths( min_dontcare, max_dontcare );
         for ( uint32_t i = 0; i < size; i++ )
         {
             leng_vec.push_back( lengths( generator ) );
@@ -311,8 +309,7 @@ std::vector<uint32_t> patternset::CreateLengths()
                     leng = 0;
                     leng_vec[i]++;
                     leng_tmp = leng_vec[i];
-                    max_size =
-                        MaxNumberPattern( weight - 2, leng_tmp + weight - 2 );
+                    max_size = MaxNumberPattern( weight - 2, leng_tmp + weight - 2 );
                 }
                 else
                 {
@@ -365,8 +362,7 @@ std::vector<std::vector<char>> patternset::CreatePattern()
             pat[0] = '1';
             pat[pat.size() - 1] = '1';
             tmp_weight = weight - 2;
-            std::uniform_int_distribution<uint32_t> positions(
-                0, pattern_dontcare[i] + weight - 1 );
+            std::uniform_int_distribution<uint32_t> positions( 0, pattern_dontcare[i] + weight - 1 );
             while ( tmp_weight > 0 )
             {
                 pos = positions( generator );
@@ -748,8 +744,7 @@ uint64_t patternset::GetSymbolRandPos( uint32_t number, char symb )
             }
         }
 
-        std::uniform_int_distribution<uint32_t> posits( 0,
-                                                        positions.size() - 1 );
+        std::uniform_int_distribution<uint32_t> posits( 0, positions.size() - 1 );
         pos = posits( generator );
         pos = positions[pos];
         positions.clear();
@@ -776,8 +771,7 @@ void patternset::SecureMessage( std::string errmsg, int pos )
     {
         printf( "%c[1;31mERROR! ", 27 );
         printf( "%c[0m", 27 );
-        std::cerr << "Pattern file \'" << inFile << "\' could not be found!"
-                  << std::endl;
+        std::cerr << "Pattern file \'" << inFile << "\' could not be found!" << std::endl;
         std::cerr << "Return to submitted or default values\n" << std::endl;
         return;
     }
@@ -793,8 +787,7 @@ void patternset::SecureMessage( std::string errmsg, int pos )
     {
         printf( "%c[1;31mERROR! ", 27 );
         printf( "%c[0m", 27 );
-        std::cerr << "Patternconditions from pattern " << pos + 1
-                  << " file were not correct (different weight, etc.)!"
+        std::cerr << "Patternconditions from pattern " << pos + 1 << " file were not correct (different weight, etc.)!"
                   << std::endl;
         std::cerr << "Go on to next pattern.\n" << std::endl;
         return;
@@ -803,9 +796,7 @@ void patternset::SecureMessage( std::string errmsg, int pos )
     {
         printf( "%c[1;31mFORMAT-ERROR: ", 27 );
         printf( "%c[0m", 27 );
-        std::cerr << "Pattern " << pos + 1
-                  << " has to start and end with a match position '1' !\n"
-                  << std::endl;
+        std::cerr << "Pattern " << pos + 1 << " has to start and end with a match position '1' !\n" << std::endl;
         return;
     }
     if ( errmsg == "format" )
@@ -823,9 +814,7 @@ void patternset::SecureMessage( std::string errmsg, int pos )
     {
         printf( "%c[1;31mERROR! ", 27 );
         printf( "%c[0m", 27 );
-        std::cerr
-            << "Wrong values for weight, pattern number or pattern length!"
-            << std::endl;
+        std::cerr << "Wrong values for weight, pattern number or pattern length!" << std::endl;
         std::cerr << "Return to default values\n" << std::endl;
         return;
     }
@@ -842,8 +831,7 @@ void patternset::SecureMessage( std::string errmsg, int pos )
     {
         printf( "%c[1;31mERROR! ", 27 );
         printf( "%c[0m", 27 );
-        std::cerr << "By comparing with the first pattern, the " << pos + 1
-                  << ". pattern has a different weight!\n"
+        std::cerr << "By comparing with the first pattern, the " << pos + 1 << ". pattern has a different weight!\n"
                   << std::endl;
         return;
     }
@@ -1023,8 +1011,7 @@ double patternset::MaxNumberPattern( uint32_t k, uint32_t l )
  * is
  * not existing in the patternset.
  */
-bool patternset::UniqPattern( std::vector<std::vector<char>> pats,
-                              std::vector<char> pat )
+bool patternset::UniqPattern( std::vector<std::vector<char>> pats, std::vector<char> pat )
 {
     bool uniq, no_common;
     uniq = true;
@@ -1070,8 +1057,7 @@ bool patternset::UniqPattern( std::vector<std::vector<char>> pats,
  */
 bool patternset::UniqBit( uint64_t bit_pat )
 {
-    return std::find( bit_pattern_set.begin(), bit_pattern_set.end(),
-                      bit_pat ) == bit_pattern_set.end();
+    return std::find( bit_pattern_set.begin(), bit_pattern_set.end(), bit_pat ) == bit_pattern_set.end();
 }
 
 /**
@@ -1285,8 +1271,7 @@ bool patternset::GetUpdate()
  */
 void patternset::SetPattern( uint32_t number, uint64_t pat )
 {
-    if ( (uint32_t) std::log2( pat ) ==
-         (uint32_t) std::log2( bit_pattern_set[number % size] ) )
+    if ( (uint32_t) std::log2( pat ) == (uint32_t) std::log2( bit_pattern_set[number % size] ) )
     {
         bit_pattern_set[number % size] = pat;
     }
@@ -1302,9 +1287,7 @@ void patternset::SetPattern( uint32_t number, uint64_t pat )
 void patternset::SetPattern( uint32_t number, std::vector<char> pat )
 {
     uint64_t tmp;
-    if ( bitmode &&
-         pat.size() ==
-             ( uint32_t )( std::log2( bit_pattern_set[number % size] ) + 1 ) )
+    if ( bitmode && pat.size() == ( uint32_t )( std::log2( bit_pattern_set[number % size] ) + 1 ) )
     {
         tmp = StringToBit( pat );
         bit_pattern_set[number % size] = tmp;

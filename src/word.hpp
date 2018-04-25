@@ -15,15 +15,15 @@
 #ifndef WORD_HPP_
 #define WORD_HPP_
 
-#include "options.hpp"
-#include "pattern.hpp"
-#include "sequence.hpp"
-
 #include <cassert>
 #include <iostream>
 #include <limits>
 #include <string>
 #include <vector>
+
+#include "options.hpp"
+#include "pattern.hpp"
+#include "sequence.hpp"
 
 /**
 * @brief The Word class contains the spaced word (a 32-bit integer hash),

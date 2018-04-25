@@ -14,15 +14,16 @@
 #ifndef QUARTETBLOCK_HPP_
 #define QUARTETBLOCK_HPP_
 
-#include "sequence.hpp"
-#include "stats.hpp"
-#include "word.hpp"
 #include <algorithm>
 #include <cassert>
 #include <iomanip>
 #include <iostream>
 #include <string>
 #include <vector>
+
+#include "sequence.hpp"
+#include "stats.hpp"
+#include "word.hpp"
 
 /**
 * @brief This class contains the words that make up a quartet block. It is

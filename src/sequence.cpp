@@ -26,8 +26,7 @@ std::vector<Sequence> Sequence::read( std::string & file_name, bool verbose )
     std::ifstream infile( file_name.c_str() );
     if ( infile.is_open() == false )
     {
-        throw std::runtime_error( "File " + file_name +
-                                  " could not be opened!" );
+        throw std::runtime_error( "File " + file_name + " could not be opened!" );
     }
     std::string line;
     std::string header;
@@ -38,9 +37,7 @@ std::vector<Sequence> Sequence::read( std::string & file_name, bool verbose )
         std::getline( infile, line, '>' );
         sequences.emplace_back( header, line );
         if ( verbose )
-            std::cout << sequences.back().id << ": "
-                      << sequences.back().content.size() << " residues."
-                      << std::endl;
+            std::cout << sequences.back().id << ": " << sequences.back().content.size() << " residues." << std::endl;
     }
     return sequences;
 }
@@ -80,11 +77,8 @@ Sequence::Sequence( std::string header, std::string & seq ) : id( header )
 
     size_t test_length = std::min( content.size(), (size_t) 100 );
     if ( std::count_if( content.begin(), content.begin() + test_length,
-                        []( char c ) {
-                            return c == std::numeric_limits<char>::max();
-                        } ) > 0.5 * test_length )
+                        []( char c ) { return c == std::numeric_limits<char>::max(); } ) > 0.5 * test_length )
     {
-        throw std::runtime_error( "The sequence " + id +
-                                  " is not a DNA sequence!" );
+        throw std::runtime_error( "The sequence " + id + " is not a DNA sequence!" );
     }
 }

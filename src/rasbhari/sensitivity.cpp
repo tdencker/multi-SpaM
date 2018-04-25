@@ -63,8 +63,7 @@ sensitivity::sensitivity()
  * @param H				Length of a homolgue random region in a
  * Dataset.
  */
-sensitivity::sensitivity( const char * inFile, double p, double q, uint32_t H,
-                          int seq_leng )
+sensitivity::sensitivity( const char * inFile, double p, double q, uint32_t H, int seq_leng )
 {
     this->p = p;
     this->H = H;
@@ -102,9 +101,8 @@ sensitivity::sensitivity( const char * inFile, double p, double q, uint32_t H,
  * @param seq_leng		Length of sequences in database, used for
  * variance.
  */
-sensitivity::sensitivity( uint32_t size, uint32_t weight, uint32_t min_dontcare,
-                          uint32_t max_dontcare, double p, double q, double H,
-                          uint32_t seq_leng )
+sensitivity::sensitivity( uint32_t size, uint32_t weight, uint32_t min_dontcare, uint32_t max_dontcare, double p,
+                          double q, double H, uint32_t seq_leng )
 {
     this->p = p;
     this->q = q;
@@ -165,8 +163,8 @@ void sensitivity::Init()
  * @param outFile 		Char array which contains name and path to
  * outputfile (commandline parameter).
  */
-void sensitivity::Init( bool sens, bool oc, bool improve, bool randpatleng,
-                        bool quiet, bool silent, const char * outFile )
+void sensitivity::Init( bool sens, bool oc, bool improve, bool randpatleng, bool quiet, bool silent,
+                        const char * outFile )
 {
     if ( !init )
     {
@@ -195,8 +193,7 @@ void sensitivity::ReInit()
     }
     else
     {
-        var_pattern = variance( size, weight, min_dontcare, max_dontcare,
-                                seq_leng, p, q );
+        var_pattern = variance( size, weight, min_dontcare, max_dontcare, seq_leng, p, q );
     }
     var_pattern.Init( oc, improve, quiet, true, randpatleng, NULL );
     ReInit( var_pattern );
@@ -238,8 +235,7 @@ void sensitivity::ReInit( variance & var_pattern )
     }
     if ( sens )
     {
-        sens_value =
-            CalculateSensitivity( var_pattern.GetPattern(), p, size, H );
+        sens_value = CalculateSensitivity( var_pattern.GetPattern(), p, size, H );
     }
     else
     {
@@ -269,8 +265,7 @@ void sensitivity::Improve( uint32_t limits, uint32_t opt_oc )
     var_pattern.Improve( limits, opt_oc );
     if ( sens )
     {
-        sens_value =
-            CalculateSensitivity( var_pattern.GetPattern(), p, size, H );
+        sens_value = CalculateSensitivity( var_pattern.GetPattern(), p, size, H );
     }
 }
 
@@ -316,17 +311,13 @@ void sensitivity::Improve( uint32_t limits, uint32_t opt_oc, uint32_t opt_sens )
     {
         std::cout << "\n ===== First patternset =====" << std::endl;
         var_pattern.Print();
-        std::cout << var_pattern.GetFormat() << var_pattern.GetVariance()
-                  << std::endl;
-        std::cout << "norm_" << var_pattern.GetFormat()
-                  << var_pattern.GetNormVariance() << std::endl;
+        std::cout << var_pattern.GetFormat() << var_pattern.GetVariance() << std::endl;
+        std::cout << "norm_" << var_pattern.GetFormat() << var_pattern.GetNormVariance() << std::endl;
         if ( sens )
         {
             std::cout << "sensitivity\t\t\t= " << sens_value << std::endl;
         }
-        std::cout << "time\t\t\t\t= " << best_time * to_second << " sec"
-                  << std::endl
-                  << std::endl;
+        std::cout << "time\t\t\t\t= " << best_time * to_second << " sec" << std::endl << std::endl;
     }
     if ( sens && improve )
     {
@@ -346,30 +337,21 @@ void sensitivity::Improve( uint32_t limits, uint32_t opt_oc, uint32_t opt_sens )
                 {
                     if ( !quiet )
                     {
-                        std::cout << "\n*** BETTER PATTERN " << better_pattern
-                                  << " *** \t(sensitivity optimization)"
+                        std::cout << "\n*** BETTER PATTERN " << better_pattern << " *** \t(sensitivity optimization)"
                                   << std::endl;
-                        std::cout << "Step " << i << " / " << opt_sens
-                                  << std::endl
-                                  << "Patternset: \n";
+                        std::cout << "Step " << i << " / " << opt_sens << std::endl << "Patternset: \n";
                         var_pattern.Print();
-                        std::cout << var_pattern.GetFormat()
-                                  << var_pattern.GetVariance() << std::endl;
-                        std::cout << "norm_" << var_pattern.GetFormat()
-                                  << var_pattern.GetNormVariance() << std::endl;
+                        std::cout << var_pattern.GetFormat() << var_pattern.GetVariance() << std::endl;
+                        std::cout << "norm_" << var_pattern.GetFormat() << var_pattern.GetNormVariance() << std::endl;
                         if ( sens )
                         {
-                            std::cout << "sensitivity\t\t\t= " << sens_value
-                                      << std::endl;
+                            std::cout << "sensitivity\t\t\t= " << sens_value << std::endl;
                         }
-                        std::cout << "time\t\t\t\t= " << best_time * to_second
-                                  << " sec" << std::endl
-                                  << std::endl;
+                        std::cout << "time\t\t\t\t= " << best_time * to_second << " sec" << std::endl << std::endl;
                     }
                     else
                     {
-                        std::cout << "\r*** BETTER PATTERN " << better_pattern
-                                  << " *** \t(sensitivity optimization)";
+                        std::cout << "\r*** BETTER PATTERN " << better_pattern << " *** \t(sensitivity optimization)";
                         std::cout.flush();
                     }
                 }
@@ -389,17 +371,13 @@ void sensitivity::Improve( uint32_t limits, uint32_t opt_oc, uint32_t opt_sens )
     {
         std::cout << "\n\n ===== Best patternset ======" << std::endl;
         var_pattern.Print();
-        std::cout << var_pattern.GetFormat() << var_pattern.GetVariance()
-                  << std::endl;
-        std::cout << "norm_" << var_pattern.GetFormat()
-                  << var_pattern.GetNormVariance() << std::endl;
+        std::cout << var_pattern.GetFormat() << var_pattern.GetVariance() << std::endl;
+        std::cout << "norm_" << var_pattern.GetFormat() << var_pattern.GetNormVariance() << std::endl;
         if ( sens )
         {
             std::cout << "sensitivity\t\t\t= " << sens_value << std::endl;
         }
-        std::cout << "time\t\t\t\t= " << best_time * to_second << " sec"
-                  << std::endl
-                  << std::endl;
+        std::cout << "time\t\t\t\t= " << best_time * to_second << " sec" << std::endl << std::endl;
     }
     if ( isOutFile )
     {
@@ -413,19 +391,14 @@ void sensitivity::Improve( uint32_t limits, uint32_t opt_oc, uint32_t opt_sens )
             out_str = std::string( out_pat.begin(), out_pat.end() );
             pattern_out << out_str << std::endl;
         }
-        pattern_out << var_pattern.GetFormat() << var_pattern.GetVariance()
-                    << std::endl;
-        pattern_out << "norm_" << var_pattern.GetFormat()
-                    << var_pattern.GetNormVariance() << std::endl;
+        pattern_out << var_pattern.GetFormat() << var_pattern.GetVariance() << std::endl;
+        pattern_out << "norm_" << var_pattern.GetFormat() << var_pattern.GetNormVariance() << std::endl;
         if ( sens )
         {
             pattern_out << "sensitivity\t\t\t= " << sens_value << std::endl;
         }
-        pattern_out << "time\t\t\t\t= " << best_time * to_second << " sec"
-                    << std::endl
-                    << std::endl;
-        std::cout << "... Done!\n======================================="
-                  << std::endl;
+        pattern_out << "time\t\t\t\t= " << best_time * to_second << " sec" << std::endl << std::endl;
+        std::cout << "... Done!\n=======================================" << std::endl;
     }
     if ( !silent && update )
     {
@@ -579,8 +552,7 @@ void sensitivity::SecureMessage( std::string errmsg, int pos )
     if ( errmsg == "bitmode" )
     {
         printf( "%c[1;33m", 27 );
-        std::cerr << "A patternlength is over 63, leaving bitmode ..."
-                  << std::endl;
+        std::cerr << "A patternlength is over 63, leaving bitmode ..." << std::endl;
         std::cerr << "Using your pattern conditions it is not possible to "
                      "calculate the sensitivity!"
                   << std::endl;
@@ -603,9 +575,7 @@ void sensitivity::SecureMessage( std::string errmsg, int pos )
  *
  * @param R		The length of random homolog region in a dataset (=H).
  */
-double
-sensitivity::CalculateSensitivity( std::vector<std::vector<char>> pattern,
-                                   double p, int n, int R )
+double sensitivity::CalculateSensitivity( std::vector<std::vector<char>> pattern, double p, int n, int R )
 {
     double sens;
     uint32_t p_size = pattern.size(), length;
@@ -647,9 +617,9 @@ sensitivity::CalculateSensitivity( std::vector<std::vector<char>> pattern,
  * Lucian Ilie, Silvana Ilie, and Anahita M. Bigvand. SpEED: fast computation
  * of sensitive spaced seeds. Bioinformatics, 27:2433–2434, 2011.
  */
-inline long long sensitivity::BIN_REVERSED_TO_INT2(
-    char * s ) // converts the reversed of the binary string s into integer
-{              // works also with * instead of 0
+inline long long
+sensitivity::BIN_REVERSED_TO_INT2( char * s ) // converts the reversed of the binary string s into integer
+{                                             // works also with * instead of 0
     long long val = 0;
     long long l = strlen( s ), i = 0, temp = 1;
     for ( i = 0; i <= l - 1; i++ )
@@ -664,12 +634,10 @@ inline long long sensitivity::BIN_REVERSED_TO_INT2(
 * Computing sensitivity of a set of SEEDS with the given parameters
 * using the dynamic programming of (Li et al., 2004)
 */
-double sensitivity::MULTIPLE_SENSITIVITY2( char ** SEEDS, int NO_SEEDS,
-                                           long long N, double P )
+double sensitivity::MULTIPLE_SENSITIVITY2( char ** SEEDS, int NO_SEEDS, long long N, double P )
 {
-    long long i = 0, j = 0, b = 0, pos = 0, MAX_L = 0, level = 0,
-              prev_level_start = 0, prev_level_end = 0, compatible = 0, hit = 0,
-              suffix_link = 0, zero_link = 0, new_i = 0, tmp = 0;
+    long long i = 0, j = 0, b = 0, pos = 0, MAX_L = 0, level = 0, prev_level_start = 0, prev_level_end = 0,
+              compatible = 0, hit = 0, suffix_link = 0, zero_link = 0, new_i = 0, tmp = 0;
     long long b_zero = 0, b_one = 0;
     double f0 = 0, f1 = 0;
     // compute the lengths of the seeds and MAX_L = the length of the longest
@@ -686,8 +654,7 @@ double sensitivity::MULTIPLE_SENSITIVITY2( char ** SEEDS, int NO_SEEDS,
     // compute the integer values of the reversed seeds INTeger REVersed SEEDS
     long long * INT_REV_SEEDS = new long long[NO_SEEDS];
     for ( i = 0; i <= NO_SEEDS - 1; i++ )
-        INT_REV_SEEDS[i] =
-            BIN_REVERSED_TO_INT2( SEEDS[i] ); // !!! this works like * = 0
+        INT_REV_SEEDS[i] = BIN_REVERSED_TO_INT2( SEEDS[i] ); // !!! this works like * = 0
 
     // create the tree of BS --- 1..NO_BS-1
     // *********************************************************
@@ -762,9 +729,7 @@ double sensitivity::MULTIPLE_SENSITIVITY2( char ** SEEDS, int NO_SEEDS,
                                                       // to seee if b0 is
                                                       // compat/hit
                     if ( seed_length[j] >= level )
-                        if ( ( ( INT_REV_SEEDS[j] >>
-                                 ( seed_length[j] - level ) ) &
-                               ( ~b_zero ) ) == 0 )
+                        if ( ( ( INT_REV_SEEDS[j] >> ( seed_length[j] - level ) ) & ( ~b_zero ) ) == 0 )
                         {
                             compatible = 1;
                             if ( level == seed_length[j] )
@@ -777,8 +742,7 @@ double sensitivity::MULTIPLE_SENSITIVITY2( char ** SEEDS, int NO_SEEDS,
                     BS[pos][4] = hit; // hit = 1 if it is hit by a seed
                     BS[pos][5] = level;
                     suffix_link = BS[i][3];
-                    while ( ( suffix_link != 0 ) &&
-                            ( BS[suffix_link][1] == -1 ) )
+                    while ( ( suffix_link != 0 ) && ( BS[suffix_link][1] == -1 ) )
                     {
                         suffix_link = BS[suffix_link][3];
                     }
@@ -798,9 +762,7 @@ double sensitivity::MULTIPLE_SENSITIVITY2( char ** SEEDS, int NO_SEEDS,
                                                       // seed to seee if b0 is
                                                       // compat/hit
                     if ( seed_length[j] >= level )
-                        if ( ( ( INT_REV_SEEDS[j] >>
-                                 ( seed_length[j] - level ) ) &
-                               ( ~b_one ) ) == 0 )
+                        if ( ( ( INT_REV_SEEDS[j] >> ( seed_length[j] - level ) ) & ( ~b_one ) ) == 0 )
                         {
                             compatible = 1;
                             if ( level == seed_length[j] )
@@ -818,8 +780,7 @@ double sensitivity::MULTIPLE_SENSITIVITY2( char ** SEEDS, int NO_SEEDS,
                         suffix_link = BS[suffix_link][3];
                     }
                     BS[pos][3] = BS[suffix_link][2];
-                    if ( BS[BS[pos][3]][4] ==
-                         1 ) // if suffix link is hit then also itself is hit
+                    if ( BS[BS[pos][3]][4] == 1 ) // if suffix link is hit then also itself is hit
                         BS[pos][4] = 1;
 
                     pos++;

@@ -19,16 +19,14 @@
 * thread id/num.
 **/
 
-RandomMatchFinder::RandomMatchFinder( std::vector<Word> & sorted_array,
-                                      int thread_id, int thread_num )
+RandomMatchFinder::RandomMatchFinder( std::vector<Word> & sorted_array, int thread_id, int thread_num )
 {
     float x = (float) thread_id / thread_num;
     _vec_start = sorted_array.begin() + x * sorted_array.size();
     if ( thread_id != 0 )
     {
         auto key = _vec_start->getKey();
-        while ( ++_vec_start != sorted_array.end() &&
-                _vec_start->getKey() == key )
+        while ( ++_vec_start != sorted_array.end() && _vec_start->getKey() == key )
             ;
     }
     x = (float) ( thread_id + 1 ) / thread_num;
@@ -41,8 +39,7 @@ RandomMatchFinder::RandomMatchFinder( std::vector<Word> & sorted_array,
     }
 }
 
-int8_t score_mat[16] = {91,  -114, -31, -123, -114, 100, -125, -31,
-                        -31, -125, 100, -114, -123, -31, -114, 91};
+int8_t score_mat[16] = {91, -114, -31, -123, -114, 100, -125, -31, -31, -125, 100, -114, -123, -31, -114, 91};
 constexpr int max_iterations = 10000;
 
 /**
@@ -79,9 +76,7 @@ backup:
             ;
         if ( _start->getKey() != key )
             _start++;
-        if ( std::count_if( _start, _end, [&]( Word & w ) {
-                 return w.getPos() != _dummy_vec.end();
-             } ) >= 4 )
+        if ( std::count_if( _start, _end, [&]( Word & w ) { return w.getPos() != _dummy_vec.end(); } ) >= 4 )
         {
             repeat = false;
         }
@@ -107,8 +102,7 @@ backup:
             // Same component = even if score is negative, it will be in the
             // same QuartetBlock, so no need to compute
             if ( ( _start + i )->getSeq() == ( _start + j )->getSeq() ||
-                 &components[i].getComponent() ==
-                     &components[j].getComponent() )
+                 &components[i].getComponent() == &components[j].getComponent() )
             {
                 continue;
             }
@@ -125,9 +119,8 @@ backup:
             const int step_seq1 = ( _start + i )->revComp() ? -1 : 1;
             const int step_seq2 = ( _start + j )->revComp() ? -1 : 1;
             constexpr int alphabet_size = 4;
-            for ( size_t k = 0; k < p.size(); ++k,
-                         std::advance( pos_seq1, step_seq1 ),
-                         std::advance( pos_seq2, step_seq2 ) )
+            for ( size_t k = 0; k < p.size();
+                  ++k, std::advance( pos_seq1, step_seq1 ), std::advance( pos_seq2, step_seq2 ) )
             {
                 //	            if(p.isMatch(k))
                 //	            {
@@ -138,8 +131,7 @@ backup:
             }
             if ( score >= mspamoptions::min_score )
             {
-                components[i].getComponent().merge(
-                    components[j].getComponent() );
+                components[i].getComponent().merge( components[j].getComponent() );
             }
             else
             {
@@ -157,10 +149,7 @@ backup:
     }
 
     components.erase( std::remove_if( components.begin(), components.end(),
-                                      []( Component & c ) {
-                                          return c.size() <
-                                                 mspamoptions::min_sequences;
-                                      } ),
+                                      []( Component & c ) { return c.size() < mspamoptions::min_sequences; } ),
                       components.end() );
 
     // choose component and extract 4 words

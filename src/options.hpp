@@ -15,7 +15,7 @@
 #ifndef OPTIONS_HPP_
 #define OPTIONS_HPP_
 
-#include "getopt.h"
+#include <getopt.h>
 #include <iomanip>
 #include <iostream>
 #include <string>

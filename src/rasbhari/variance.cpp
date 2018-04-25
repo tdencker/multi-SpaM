@@ -58,8 +58,7 @@ variance::variance()
  * @param max_dontcare	Number of maximum don't care positions ('0') in each
  * pattern.
  */
-variance::variance( uint32_t size, uint32_t weight, uint32_t min_dontcare,
-                    uint32_t max_dontcare )
+variance::variance( uint32_t size, uint32_t weight, uint32_t min_dontcare, uint32_t max_dontcare )
 {
     this->size = size;
     this->weight = weight;
@@ -96,9 +95,8 @@ variance::variance( uint32_t size, uint32_t weight, uint32_t min_dontcare,
  * @param q				Background probability, used for
  * variance.
  */
-variance::variance( uint32_t size, uint32_t weight, uint32_t min_dontcare,
-                    uint32_t max_dontcare, uint32_t seq_leng, double p,
-                    double q )
+variance::variance( uint32_t size, uint32_t weight, uint32_t min_dontcare, uint32_t max_dontcare, uint32_t seq_leng,
+                    double p, double q )
 {
     this->size = size;
     this->weight = weight;
@@ -182,8 +180,7 @@ void variance::Init()
  * @param outFile 		Char array which contains name and path to
  * outputfile (commandline parameter)
  */
-void variance::Init( bool oc, bool improve, bool quiet, bool silent,
-                     bool random_leng, const char * outFile )
+void variance::Init( bool oc, bool improve, bool quiet, bool silent, bool random_leng, const char * outFile )
 {
     if ( !initialized )
     {
@@ -231,8 +228,7 @@ void variance::ReInit()
     }
     else
     {
-        pattern_set =
-            patternset( size, weight, min_dontcare, max_dontcare, true );
+        pattern_set = patternset( size, weight, min_dontcare, max_dontcare, true );
     }
     pattern_set.Init( random_leng );
     ReInit( pattern_set );
@@ -291,8 +287,7 @@ void variance::InitVariance()
     oc_hom = 1;
     variance_val = 0;
 
-    variance_mat = std::vector<std::vector<double>>(
-        size, std::vector<double>( size, 0 ) );
+    variance_mat = std::vector<std::vector<double>>( size, std::vector<double>( size, 0 ) );
     pattern_variance = std::vector<double>( size, 0 );
     pattern_current_contribute = std::vector<double>( size, 0 );
     pattern_last_contribute = std::vector<double>( size, 0 );
@@ -602,8 +597,7 @@ void variance::Improve( uint32_t limits )
                 {
                     best_variance_val = variance_val;
                     variance_set.erase( var_iterator );
-                    tmp_pair = std::make_pair( pattern_variance[worst_pat],
-                                               worst_pat );
+                    tmp_pair = std::make_pair( pattern_variance[worst_pat], worst_pat );
                     variance_set.insert( tmp_pair );
                     var_iterator = variance_set.end();
                     better_pattern++;
@@ -612,23 +606,16 @@ void variance::Improve( uint32_t limits )
                     {
                         if ( !quiet )
                         {
-                            std::cout << "*** BETTER PATTERN " << better_pattern
-                                      << " *** \t(random permutation)"
+                            std::cout << "*** BETTER PATTERN " << better_pattern << " *** \t(random permutation)"
                                       << std::endl;
-                            std::cout << "Step " << i << " / " << limits
-                                      << std::endl
-                                      << "Patternset: \n";
+                            std::cout << "Step " << i << " / " << limits << std::endl << "Patternset: \n";
                             pattern_set.Print();
                             std::cout << outvar << GetVariance() << std::endl;
-                            std::cout << "norm_" << outvar << GetNormVariance()
-                                      << std::endl
-                                      << std::endl;
+                            std::cout << "norm_" << outvar << GetNormVariance() << std::endl << std::endl;
                         }
                         else
                         {
-                            std::cout << "\r*** BETTER PATTERN "
-                                      << better_pattern
-                                      << " *** \t(random permutation)";
+                            std::cout << "\r*** BETTER PATTERN " << better_pattern << " *** \t(random permutation)";
                             std::cout.flush();
                         }
                     }
@@ -696,8 +683,7 @@ void variance::Improve( uint32_t limits, uint32_t loops )
             std::cout << "\n===== First patternset =====" << std::endl;
             pattern_set.Print();
             std::cout << outvar << GetVariance() << std::endl;
-            std::cout << "norm_" << outvar << GetNormVariance() << std::endl
-                      << std::endl;
+            std::cout << "norm_" << outvar << GetNormVariance() << std::endl << std::endl;
         }
 
         best_variance_val = variance_val;
@@ -713,21 +699,16 @@ void variance::Improve( uint32_t limits, uint32_t loops )
                 {
                     if ( !quiet )
                     {
-                        std::cout << "\n*** BETTER PATTERN " << better_pattern
-                                  << " *** \t(oc/variance optimization)"
+                        std::cout << "\n*** BETTER PATTERN " << better_pattern << " *** \t(oc/variance optimization)"
                                   << std::endl;
-                        std::cout << "Step " << i << " / " << loops << std::endl
-                                  << "Patternset: \n";
+                        std::cout << "Step " << i << " / " << loops << std::endl << "Patternset: \n";
                         pattern_set.Print();
                         std::cout << outvar << GetVariance() << std::endl;
-                        std::cout << "norm_" << outvar << GetNormVariance()
-                                  << std::endl
-                                  << std::endl;
+                        std::cout << "norm_" << outvar << GetNormVariance() << std::endl << std::endl;
                     }
                     else
                     {
-                        std::cout << "\r*** BETTER PATTERN " << better_pattern
-                                  << " *** \t(oc/variance optimization)";
+                        std::cout << "\r*** BETTER PATTERN " << better_pattern << " *** \t(oc/variance optimization)";
                         std::cout.flush();
                     }
                 }
@@ -748,21 +729,18 @@ void variance::Improve( uint32_t limits, uint32_t loops )
             std::cout << "\n===== Best patternset ======" << std::endl;
             pattern_set.Print();
             std::cout << outvar << GetVariance() << std::endl;
-            std::cout << "norm_" << outvar << GetNormVariance() << std::endl
-                      << std::endl;
+            std::cout << "norm_" << outvar << GetNormVariance() << std::endl << std::endl;
         }
         if ( isOutFile && best_silent )
         {
             pattern_out.open( outFile );
             for ( uint32_t i = 0; i < size; i++ )
             {
-                out_str = std::string( pattern_set.GetPattern( i ).begin(),
-                                       pattern_set.GetPattern( i ).end() );
+                out_str = std::string( pattern_set.GetPattern( i ).begin(), pattern_set.GetPattern( i ).end() );
                 pattern_out << out_str << std::endl;
             }
             pattern_out << GetFormat() << GetVariance() << std::endl;
-            pattern_out << "norm_" << GetFormat() << GetNormVariance()
-                        << std::endl;
+            pattern_out << "norm_" << GetFormat() << GetNormVariance() << std::endl;
         }
     }
     else if ( !improve && !silent )
@@ -810,10 +788,8 @@ void variance::SecureMessage( std::string errmsg, int pos )
         printf( "%c[0m", 27 );
         printf( "%c[1;31mError ", 27 );
         printf( "%c[0m", 27 );
-        std::cerr << "while parsing your p and/or q value: \t0 < q <= p <= 1!"
-                  << std::endl;
-        std::cerr << "Return to default values:\tp = 0.75 \tq=0.25\n"
-                  << std::endl;
+        std::cerr << "while parsing your p and/or q value: \t0 < q <= p <= 1!" << std::endl;
+        std::cerr << "Return to default values:\tp = 0.75 \tq=0.25\n" << std::endl;
         return;
     }
 }

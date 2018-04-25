@@ -5,7 +5,7 @@ AllowShortIfStatementsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: None
 AllowShortCaseLabelsOnASingleLine: false
 IndentCaseLabels: false
-ColumnLimit: 80
+ColumnLimit: 120
 AlignAfterOpenBracket: true
 AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: false

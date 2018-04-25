@@ -13,8 +13,7 @@
  */
 #include "component.hpp"
 
-Component::Component( const std::vector<Word>::iterator & first, int n )
-    : m_total( n, 0 ), m_component( this )
+Component::Component( const std::vector<Word>::iterator & first, int n ) : m_total( n, 0 ), m_component( this )
 {
     m_words.push_back( first );
     m_total[first->getSeq()]++;
@@ -46,8 +45,7 @@ void Component::removeUncertainties()
 
 unsigned Component::countSequences() const
 {
-    return std::count_if( m_total.begin(), m_total.end(),
-                          []( int x ) { return x > 0; } );
+    return std::count_if( m_total.begin(), m_total.end(), []( int x ) { return x > 0; } );
 }
 
 size_t Component::size() const
@@ -95,13 +93,9 @@ void Component::merge( Component & other )
     if ( &other == this )
         return;
     // keep the larger component
-    Component & merging_from =
-        this->m_words.size() >= other.m_words.size() ? other : *this;
-    Component & merging_into =
-        this->m_words.size() >= other.m_words.size() ? *this : other;
-    merging_into.m_words.insert( merging_into.m_words.end(),
-                                 merging_from.m_words.begin(),
-                                 merging_from.m_words.end() );
+    Component & merging_from = this->m_words.size() >= other.m_words.size() ? other : *this;
+    Component & merging_into = this->m_words.size() >= other.m_words.size() ? *this : other;
+    merging_into.m_words.insert( merging_into.m_words.end(), merging_from.m_words.begin(), merging_from.m_words.end() );
     for ( unsigned i = 0; i < m_total.size(); ++i )
         merging_into.m_total[i] += merging_from.m_total[i];
     merging_from.m_component = merging_into.m_component;

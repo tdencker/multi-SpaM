@@ -15,7 +15,6 @@
 #ifndef SEQUENCE_HPP_
 #define SEQUENCE_HPP_
 
-#include "stats.hpp"
 #include <algorithm>
 #include <exception>
 #include <fstream>
@@ -24,6 +23,8 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+
+#include "stats.hpp"
 
 /**
 * @brief Sequence container class. ID is the header of the sequence as described

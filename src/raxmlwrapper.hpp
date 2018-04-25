@@ -33,8 +33,7 @@ inline int idx2code( QuartetBlock & qb, int idx )
 * all the things that RAxML does not so that it can be used multiple times.
 **/
 
-void freeAllTheThings( analdef * adef, tree * tr, cruncheddata * cdta,
-                       rawdata * rdta )
+void freeAllTheThings( analdef * adef, tree * tr, cruncheddata * cdta, rawdata * rdta )
 {
     // setuptree
     rax_free( tr->partitionContributions );
@@ -137,9 +136,7 @@ void freeAllTheThings( analdef * adef, tree * tr, cruncheddata * cdta,
 * @return the number of quartets written to file
 **/
 
-uint64_t computeAndPrintBestQuartets( QuartetBlock & qb,
-                                      std::ostream & out = std::cout,
-                                      bool gamma_model = true )
+uint64_t computeAndPrintBestQuartets( QuartetBlock & qb, std::ostream & out = std::cout, bool gamma_model = true )
 {
     analdef * adef = (analdef *) rax_malloc( sizeof( analdef ) );
     tree * tr = (tree *) rax_malloc( sizeof( tree ) );
@@ -164,16 +161,13 @@ uint64_t computeAndPrintBestQuartets( QuartetBlock & qb,
     {
         if ( qb.getRevComp( i ) )
         {
-            std::reverse_copy( qb.getPos( i ) - qb.getLength(), qb.getPos( i ),
-                               &rdta->y[i + 1][1] );
+            std::reverse_copy( qb.getPos( i ) - qb.getLength(), qb.getPos( i ), &rdta->y[i + 1][1] );
         }
         else
         {
-            std::copy( qb.getPos( i ), qb.getPos( i ) + qb.getLength(),
-                       &rdta->y[i + 1][1] );
+            std::copy( qb.getPos( i ), qb.getPos( i ) + qb.getLength(), &rdta->y[i + 1][1] );
         }
-        for ( auto ptr = &rdta->y[i + 1][1];
-              ptr <= &rdta->y[i + 1][qb.getLength()]; ++ptr )
+        for ( auto ptr = &rdta->y[i + 1][1]; ptr <= &rdta->y[i + 1][qb.getLength()]; ++ptr )
         {
             if ( *ptr == ( std::numeric_limits<char>::max )() )
             {
@@ -184,8 +178,7 @@ uint64_t computeAndPrintBestQuartets( QuartetBlock & qb,
             count_vec[*ptr]++;
         }
     }
-    if ( std::count_if( count_vec.begin(), count_vec.end(),
-                        [&]( int x ) { return x > 0; } ) != target_count )
+    if ( std::count_if( count_vec.begin(), count_vec.end(), [&]( int x ) { return x > 0; } ) != target_count )
     {
         mspamstats::not_all_nucleotides_error++;
         return 0;
@@ -206,20 +199,17 @@ uint64_t computeAndPrintBestQuartets( QuartetBlock & qb,
         num_quartets++;
         int bestQuartet = -1;
         double bestVal = 0;
-        if ( result_vec[i].l1 > result_vec[i].l2 &&
-             result_vec[i].l1 > result_vec[i].l3 )
+        if ( result_vec[i].l1 > result_vec[i].l2 && result_vec[i].l1 > result_vec[i].l3 )
         {
             bestVal = result_vec[i].l1;
             bestQuartet = 1;
         }
-        if ( result_vec[i].l2 > result_vec[i].l1 &&
-             result_vec[i].l2 > result_vec[i].l3 )
+        if ( result_vec[i].l2 > result_vec[i].l1 && result_vec[i].l2 > result_vec[i].l3 )
         {
             bestVal = result_vec[i].l2;
             bestQuartet = 2;
         }
-        if ( result_vec[i].l3 > result_vec[i].l1 &&
-             result_vec[i].l3 > result_vec[i].l2 )
+        if ( result_vec[i].l3 > result_vec[i].l1 && result_vec[i].l3 > result_vec[i].l2 )
         {
             bestVal = result_vec[i].l3;
             bestQuartet = 3;
@@ -229,24 +219,18 @@ uint64_t computeAndPrintBestQuartets( QuartetBlock & qb,
         switch ( bestQuartet )
         {
         case 1:
-            out << idx2code( qb, result_vec[i].a1 ) << ","
-                << idx2code( qb, result_vec[i].b1 ) << "|"
-                << idx2code( qb, result_vec[i].c1 ) << ","
-                << idx2code( qb, result_vec[i].d1 ) << ":" << score
+            out << idx2code( qb, result_vec[i].a1 ) << "," << idx2code( qb, result_vec[i].b1 ) << "|"
+                << idx2code( qb, result_vec[i].c1 ) << "," << idx2code( qb, result_vec[i].d1 ) << ":" << score
                 << std::endl;
             break;
         case 2:
-            out << idx2code( qb, result_vec[i].a2 ) << ","
-                << idx2code( qb, result_vec[i].b2 ) << "|"
-                << idx2code( qb, result_vec[i].c2 ) << ","
-                << idx2code( qb, result_vec[i].d2 ) << ":" << score
+            out << idx2code( qb, result_vec[i].a2 ) << "," << idx2code( qb, result_vec[i].b2 ) << "|"
+                << idx2code( qb, result_vec[i].c2 ) << "," << idx2code( qb, result_vec[i].d2 ) << ":" << score
                 << std::endl;
             break;
         case 3:
-            out << idx2code( qb, result_vec[i].a3 ) << ","
-                << idx2code( qb, result_vec[i].b3 ) << "|"
-                << idx2code( qb, result_vec[i].c3 ) << ","
-                << idx2code( qb, result_vec[i].d3 ) << ":" << score
+            out << idx2code( qb, result_vec[i].a3 ) << "," << idx2code( qb, result_vec[i].b3 ) << "|"
+                << idx2code( qb, result_vec[i].c3 ) << "," << idx2code( qb, result_vec[i].d3 ) << ":" << score
                 << std::endl;
             break;
         case -1:

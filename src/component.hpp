@@ -14,12 +14,13 @@
 #ifndef COMPONENT_HPP_
 #define COMPONENT_HPP_
 
-#include "options.hpp"
-#include "stats.hpp"
-#include "word.hpp"
 #include <algorithm>
 #include <cassert>
 #include <vector>
+
+#include "options.hpp"
+#include "stats.hpp"
+#include "word.hpp"
 
 /**
 * @brief Mostly a legacy class. Mostly just a QuartetBlock light. Used in the

@@ -33,8 +33,7 @@ bool show_stats = false;
 void printHelp()
 {
     // TODO: show all options
-    std::cout << "-h, --help          show this help message and exit"
-              << std::endl
+    std::cout << "-h, --help          show this help message and exit" << std::endl
               << "-i <string>         [Required] Input file (multi-fasta file) "
                  "(default: None)"
               << std::endl
@@ -53,15 +52,12 @@ void printHelp()
               << "-n <int>            number of sampled quartet blocks "
                  "(default: 1000000)"
               << std::endl
-              << "-t <int>            number of threads (default: 1)"
-              << std::endl
-              << "--mem-save          memory saving mode (default: False)"
-              << std::endl
+              << "-t <int>            number of threads (default: 1)" << std::endl
+              << "--mem-save          memory saving mode (default: False)" << std::endl
               << "--show-stats        additional stats (mostly for debugging) "
                  "(default: False)"
               << std::endl
-              << "-v, --version       show program's version number and exit"
-              << std::endl;
+              << "-v, --version       show program's version number and exit" << std::endl;
 }
 
 void printVersion()
@@ -79,30 +75,28 @@ void printError( std::string message )
 
 void parseParameters( int argc, char * argv[] )
 {
-    struct option long_options[] = {
-        {"version", no_argument, nullptr, 'v'},
-        {"mem-save", no_argument, nullptr, 0},
-        {"show-stats", no_argument, nullptr, 0},
-        {"all-sequences", no_argument, nullptr, 'a'},
-        {"input", required_argument, nullptr, 'i'},
-        {"help", no_argument, nullptr, 'h'},
-        {"output", required_argument, nullptr, 'o'},
-        {"threads", required_argument, nullptr, 't'},
-        {"weight", required_argument, nullptr, 'w'},
-        {"threads", required_argument, nullptr, 't'},
-        {"dontcare", required_argument, nullptr, 'd'},
-        {"min-sequences", required_argument, nullptr, 'm'},
-        {"num-patterns", required_argument, nullptr, 'p'},
-        {"num-samples", required_argument, nullptr, 'n'},
-        {"min-score", required_argument, nullptr, 's'},
-        {nullptr, 0, nullptr, 0}};
+    struct option long_options[] = {{"version", no_argument, nullptr, 'v'},
+                                    {"mem-save", no_argument, nullptr, 0},
+                                    {"show-stats", no_argument, nullptr, 0},
+                                    {"all-sequences", no_argument, nullptr, 'a'},
+                                    {"input", required_argument, nullptr, 'i'},
+                                    {"help", no_argument, nullptr, 'h'},
+                                    {"output", required_argument, nullptr, 'o'},
+                                    {"threads", required_argument, nullptr, 't'},
+                                    {"weight", required_argument, nullptr, 'w'},
+                                    {"threads", required_argument, nullptr, 't'},
+                                    {"dontcare", required_argument, nullptr, 'd'},
+                                    {"min-sequences", required_argument, nullptr, 'm'},
+                                    {"num-patterns", required_argument, nullptr, 'p'},
+                                    {"num-samples", required_argument, nullptr, 'n'},
+                                    {"min-score", required_argument, nullptr, 's'},
+                                    {nullptr, 0, nullptr, 0}};
 
     while ( 1 )
     {
 
         int option_index = 0;
-        int c = getopt_long( argc, argv, "vai:ho:t:w:t:d:m:p:n:s:",
-                             long_options, &option_index );
+        int c = getopt_long( argc, argv, "vai:ho:t:w:t:d:m:p:n:s:", long_options, &option_index );
 
         if ( c == -1 )
         {
@@ -147,8 +141,7 @@ void parseParameters( int argc, char * argv[] )
         case 'n':
             mspamoptions::num_samples = std::atoi( optarg );
             if ( mspamoptions::num_samples < 1 )
-                printError(
-                    "The number of samples (-n) must be larger than 0" );
+                printError( "The number of samples (-n) must be larger than 0" );
             break;
         case 'o':
             mspamoptions::output_file = optarg;
@@ -162,8 +155,7 @@ void parseParameters( int argc, char * argv[] )
         case 'm':
             mspamoptions::min_sequences = std::atoi( optarg );
             if ( mspamoptions::min_sequences < 1 )
-                printError(
-                    "Min_sequences (-x) must be an integer larger than 1" );
+                printError( "Min_sequences (-x) must be an integer larger than 1" );
             break;
         case 'a':
             all_sequences = true;
@@ -194,25 +186,18 @@ void printParameters()
     constexpr int text_width = 50;
     constexpr int par_width = 10;
     std::cout << std::endl
-              << "######################## Parameters ########################"
-              << std::endl
-              << std::setw( text_width ) << std::left
-              << "Match positions (weight): " << std::setw( par_width )
+              << "######################## Parameters ########################" << std::endl
+              << std::setw( text_width ) << std::left << "Match positions (weight): " << std::setw( par_width )
               << std::right << weight << std::endl
-              << std::setw( text_width ) << std::left
-              << "Don't care positions: " << std::setw( par_width )
+              << std::setw( text_width ) << std::left << "Don't care positions: " << std::setw( par_width )
               << std::right << dontcare << std::endl
-              << std::setw( text_width ) << std::left
-              << "Number of patterns: " << std::setw( par_width ) << std::right
+              << std::setw( text_width ) << std::left << "Number of patterns: " << std::setw( par_width ) << std::right
               << num_patterns << std::endl
-              << std::setw( text_width ) << std::left
-              << "Threads: " << std::setw( par_width ) << std::right
+              << std::setw( text_width ) << std::left << "Threads: " << std::setw( par_width ) << std::right
               << num_threads << std::endl
-              << std::setw( text_width ) << std::left
-              << "Number of samples: " << std::setw( par_width ) << std::right
+              << std::setw( text_width ) << std::left << "Number of samples: " << std::setw( par_width ) << std::right
               << std::to_string( num_samples ) << std::endl
-              << "############################################################"
-              << std::endl
+              << "############################################################" << std::endl
               << std::endl;
 }
 }

@@ -74,22 +74,17 @@ void RunRAxML( std::vector<QuartetBlock> & qb_vec )
         if ( omp_get_thread_num() == 0 )
 #endif
         {
-            std::cout << "\r[Step 5 / " << num_steps << "] RAxML: " << i
-                      << " / " << qb_vec.size() << std::flush;
+            std::cout << "\r[Step 5 / " << num_steps << "] RAxML: " << i << " / " << qb_vec.size() << std::flush;
         }
 #pragma omp atomic
-        mspamstats::num_quartet_trees +=
-            computeAndPrintBestQuartets( qb_vec[i], out_file );
+        mspamstats::num_quartet_trees += computeAndPrintBestQuartets( qb_vec[i], out_file );
     }
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> diff = end - start;
 
     std::cout << std::setw( left_column ) << std::left
-              << ( "\r[Step 5 / " + std::to_string( num_steps ) +
-                   "] RaxML step" )
-              << std::setw( right_column ) << std::right
-              << std::setprecision( 2 ) << std::fixed << diff.count()
-              << " seconds" << std::endl;
+              << ( "\r[Step 5 / " + std::to_string( num_steps ) + "] RaxML step" ) << std::setw( right_column )
+              << std::right << std::setprecision( 2 ) << std::fixed << diff.count() << " seconds" << std::endl;
 }
 
 /**
@@ -98,10 +93,9 @@ void RunRAxML( std::vector<QuartetBlock> & qb_vec )
 * with the RandomMatchFinder.
 **/
 
-std::vector<QuartetBlock>
-samplingQuartetBlocks( std::vector<Word> & words, Pattern & current_pattern,
-                       size_t num_sequences, unsigned & progress, int thread_id,
-                       int thread_num, bool mem_save = false )
+std::vector<QuartetBlock> samplingQuartetBlocks( std::vector<Word> & words, Pattern & current_pattern,
+                                                 size_t num_sequences, unsigned & progress, int thread_id,
+                                                 int thread_num, bool mem_save = false )
 {
     unsigned limit = mspamoptions::num_samples / mspamoptions::num_patterns;
 
@@ -120,9 +114,8 @@ samplingQuartetBlocks( std::vector<Word> & words, Pattern & current_pattern,
     {
 #pragma omp critical
         if ( mem_save == false && progress % 100 == 0 )
-            std::cout << "\r[Step 4 / " << num_steps
-                      << "] Sampling: " << progress << " / "
-                      << mspamoptions::num_samples << std::flush;
+            std::cout << "\r[Step 4 / " << num_steps << "] Sampling: " << progress << " / " << mspamoptions::num_samples
+                      << std::flush;
 
         try
         {
@@ -144,10 +137,8 @@ samplingQuartetBlocks( std::vector<Word> & words, Pattern & current_pattern,
     if ( mem_save == false )
     {
         std::cout << std::setw( left_column ) << std::left
-                  << ( "\r[Step 4 / " + std::to_string( num_steps ) +
-                       "] Sampled quartet blocks" )
-                  << std::setw( right_column ) << std::right
-                  << std::setprecision( 2 ) << std::fixed << diff.count()
+                  << ( "\r[Step 4 / " + std::to_string( num_steps ) + "] Sampled quartet blocks" )
+                  << std::setw( right_column ) << std::right << std::setprecision( 2 ) << std::fixed << diff.count()
                   << " seconds" << std::endl;
     }
 
@@ -162,8 +153,7 @@ void sortSpacedWords( std::vector<Word> & words, bool mem_save = false )
 {
     if ( mem_save == false )
     {
-        std::cout << "[Step 3 / " << num_steps << "] Sorting spaced words ..."
-                  << std::flush;
+        std::cout << "[Step 3 / " << num_steps << "] Sorting spaced words ..." << std::flush;
     }
     auto start = std::chrono::steady_clock::now();
     // parallel merge sort sometimes allocates more space than necessary for
@@ -175,10 +165,8 @@ void sortSpacedWords( std::vector<Word> & words, bool mem_save = false )
     if ( mem_save == false )
     {
         std::cout << std::setw( left_column ) << std::left
-                  << ( "\r[Step 3 / " + std::to_string( num_steps ) +
-                       "] Sorted spaced words" )
-                  << std::setw( right_column ) << std::right
-                  << std::setprecision( 2 ) << std::fixed << diff.count()
+                  << ( "\r[Step 3 / " + std::to_string( num_steps ) + "] Sorted spaced words" )
+                  << std::setw( right_column ) << std::right << std::setprecision( 2 ) << std::fixed << diff.count()
                   << " seconds" << std::endl;
     }
 }
@@ -189,10 +177,8 @@ void sortSpacedWords( std::vector<Word> & words, bool mem_save = false )
 * identical to the bucket unsigned integer, otherwise the word is not created.
 **/
 
-std::vector<Word> createSpacedWordsMemSave( std::vector<Sequence> & sequences,
-                                            Pattern & current_pattern,
-                                            bool compute_rev_comp,
-                                            uint64_t bucket )
+std::vector<Word> createSpacedWordsMemSave( std::vector<Sequence> & sequences, Pattern & current_pattern,
+                                            bool compute_rev_comp, uint64_t bucket )
 {
     std::vector<Word> words;
 
@@ -201,8 +187,7 @@ std::vector<Word> createSpacedWordsMemSave( std::vector<Sequence> & sequences,
     {
         std::vector<Word> localWords;
         auto & seq = sequences[i].content;
-        for ( auto it = seq.begin();
-              it != seq.end() - current_pattern.size() + 1; ++it )
+        for ( auto it = seq.begin(); it != seq.end() - current_pattern.size() + 1; ++it )
         {
             const unsigned shift = mspamoptions::symbol_bits;
             uint64_t key = 0;
@@ -234,8 +219,7 @@ std::vector<Word> createSpacedWordsMemSave( std::vector<Sequence> & sequences,
         }
         if ( compute_rev_comp == true )
         {
-            for ( auto it = seq.end() - 1;
-                  it != seq.begin() + current_pattern.size() - 2; --it )
+            for ( auto it = seq.end() - 1; it != seq.begin() + current_pattern.size() - 2; --it )
             {
                 const unsigned mask = mspamoptions::mask;
                 const unsigned shift = mspamoptions::symbol_bits;
@@ -261,8 +245,7 @@ std::vector<Word> createSpacedWordsMemSave( std::vector<Sequence> & sequences,
                 }
                 try
                 {
-                    localWords.push_back(
-                        Word( current_pattern, it, i, true ) );
+                    localWords.push_back( Word( current_pattern, it, i, true ) );
                 }
                 catch ( std::exception & e )
                 {
@@ -284,8 +267,7 @@ std::vector<Word> createSpacedWordsMemSave( std::vector<Sequence> & sequences,
 * reverse complement are also created.
 **/
 
-std::vector<Word> createSpacedWords( std::vector<Sequence> & sequences,
-                                     Pattern & current_pattern,
+std::vector<Word> createSpacedWords( std::vector<Sequence> & sequences, Pattern & current_pattern,
                                      bool compute_rev_comp = true )
 {
     auto start = std::chrono::steady_clock::now();
@@ -295,33 +277,26 @@ std::vector<Word> createSpacedWords( std::vector<Sequence> & sequences,
     for ( unsigned i = 1; i < sequences.size(); ++i )
     {
         start_points[i] =
-            start_points[i - 1] +
-            ( sequences[i - 1].content.size() - current_pattern.size() + 1 ) *
-                factor;
+            start_points[i - 1] + ( sequences[i - 1].content.size() - current_pattern.size() + 1 ) * factor;
     }
     size_t size =
-        start_points[sequences.size() - 1] +
-        ( sequences.back().content.size() - current_pattern.size() + 1 ) *
-            factor;
+        start_points[sequences.size() - 1] + ( sequences.back().content.size() - current_pattern.size() + 1 ) * factor;
     std::vector<Word> words;
     words.resize( size );
     int finished_sequences = 0;
 
-    std::cout << "\r[Step 2 / " << num_steps
-              << "] Creating spaced words: " << finished_sequences << " / "
+    std::cout << "\r[Step 2 / " << num_steps << "] Creating spaced words: " << finished_sequences << " / "
               << sequences.size() << " sequences" << std::flush;
 
 #pragma omp parallel for schedule( static )
     for ( int i = 0; i < (int) sequences.size(); ++i )
     {
         auto & seq = sequences[i].content;
-        for ( auto it = seq.begin();
-              it != seq.end() - current_pattern.size() + 1; ++it )
+        for ( auto it = seq.begin(); it != seq.end() - current_pattern.size() + 1; ++it )
         {
             try
             {
-                words[start_points[i]++] =
-                    Word( current_pattern, it, i, false );
+                words[start_points[i]++] = Word( current_pattern, it, i, false );
             }
             catch ( std::exception & e )
             {
@@ -329,13 +304,11 @@ std::vector<Word> createSpacedWords( std::vector<Sequence> & sequences,
         }
         if ( compute_rev_comp == true )
         {
-            for ( auto it = seq.end() - 1;
-                  it != seq.begin() + current_pattern.size() - 2; --it )
+            for ( auto it = seq.end() - 1; it != seq.begin() + current_pattern.size() - 2; --it )
             {
                 try
                 {
-                    words[start_points[i]++] =
-                        Word( current_pattern, it, i, true );
+                    words[start_points[i]++] = Word( current_pattern, it, i, true );
                 }
                 catch ( std::exception & e )
                 {
@@ -343,18 +316,15 @@ std::vector<Word> createSpacedWords( std::vector<Sequence> & sequences,
             }
         }
 #pragma omp critical
-        std::cout << "\r[Step 2 / " << num_steps
-                  << "] Creating spaced words: " << ++finished_sequences
-                  << " / " << sequences.size() << " sequences" << std::flush;
+        std::cout << "\r[Step 2 / " << num_steps << "] Creating spaced words: " << ++finished_sequences << " / "
+                  << sequences.size() << " sequences" << std::flush;
     }
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> diff = end - start;
 
     std::cout << std::setw( left_column ) << std::left
-              << ( "\r[Step 2 / " + std::to_string( num_steps ) +
-                   "] Created spaced words" )
-              << std::setw( right_column ) << std::right
-              << std::setprecision( 2 ) << std::fixed << diff.count()
+              << ( "\r[Step 2 / " + std::to_string( num_steps ) + "] Created spaced words" )
+              << std::setw( right_column ) << std::right << std::setprecision( 2 ) << std::fixed << diff.count()
               << " seconds" << std::endl;
 
     return words;
@@ -368,8 +338,7 @@ std::vector<Word> createSpacedWords( std::vector<Sequence> & sequences,
 * as for the standard run.
 **/
 
-std::vector<QuartetBlock> runMemSave( std::vector<Sequence> & sequences,
-                                      std::vector<Pattern> & pattern_set )
+std::vector<QuartetBlock> runMemSave( std::vector<Sequence> & sequences, std::vector<Pattern> & pattern_set )
 {
     auto start = std::chrono::steady_clock::now();
     std::vector<QuartetBlock> qb_vec;
@@ -379,11 +348,9 @@ std::vector<QuartetBlock> runMemSave( std::vector<Sequence> & sequences,
     {
         for ( uint64_t bucket = 0; bucket < num_buckets; ++bucket )
         {
-            std::cout << "\r[Step 2-4 / " << num_steps
-                      << "] Partition: " << bucket << " / " << num_buckets
+            std::cout << "\r[Step 2-4 / " << num_steps << "] Partition: " << bucket << " / " << num_buckets
                       << std::flush;
-            std::vector<Word> all_spaced_words = createSpacedWordsMemSave(
-                sequences, current_pattern, true, bucket );
+            std::vector<Word> all_spaced_words = createSpacedWordsMemSave( sequences, current_pattern, true, bucket );
 
             sortSpacedWords( all_spaced_words, true );
 
@@ -398,16 +365,14 @@ std::vector<QuartetBlock> runMemSave( std::vector<Sequence> & sequences,
 #endif
 
                 std::vector<QuartetBlock> thread_qb_vec = samplingQuartetBlocks(
-                    all_spaced_words, current_pattern, sequences.size(),
-                    progress, thread_id, thread_num, true );
+                    all_spaced_words, current_pattern, sequences.size(), progress, thread_id, thread_num, true );
 
 // reduction of the index (if necessary)
 #pragma omp critical
                 {
                     if ( thread_num > 1 || pattern_set.size() > 1 )
                     {
-                        qb_vec.insert( qb_vec.end(), thread_qb_vec.begin(),
-                                       thread_qb_vec.end() );
+                        qb_vec.insert( qb_vec.end(), thread_qb_vec.begin(), thread_qb_vec.end() );
                     }
                     else
                     {
@@ -421,10 +386,8 @@ std::vector<QuartetBlock> runMemSave( std::vector<Sequence> & sequences,
     std::chrono::duration<double> diff = end - start;
 
     std::cout << std::left << std::setw( left_column )
-              << "\r[Step 2-4 / " + std::to_string( num_steps ) +
-                     "] Memory saving mode"
-              << std::fixed << std::setw( right_column ) << std::right
-              << std::setprecision( 2 ) << diff.count() << " seconds"
+              << "\r[Step 2-4 / " + std::to_string( num_steps ) + "] Memory saving mode" << std::fixed
+              << std::setw( right_column ) << std::right << std::setprecision( 2 ) << diff.count() << " seconds"
               << std::endl;
 
     assert( qb_vec.size() > 0 );
@@ -437,16 +400,14 @@ std::vector<QuartetBlock> runMemSave( std::vector<Sequence> & sequences,
 * process is repeated for every pattern in the pattern set.
 **/
 
-std::vector<QuartetBlock> runStandard( std::vector<Sequence> & sequences,
-                                       std::vector<Pattern> & pattern_set )
+std::vector<QuartetBlock> runStandard( std::vector<Sequence> & sequences, std::vector<Pattern> & pattern_set )
 {
     std::vector<QuartetBlock> qb_vec;
     unsigned progress = 0;
 
     for ( auto current_pattern : pattern_set )
     {
-        std::vector<Word> all_spaced_words =
-            createSpacedWords( sequences, current_pattern );
+        std::vector<Word> all_spaced_words = createSpacedWords( sequences, current_pattern );
         sortSpacedWords( all_spaced_words );
 
 #pragma omp parallel
@@ -460,16 +421,14 @@ std::vector<QuartetBlock> runStandard( std::vector<Sequence> & sequences,
 #endif
 
             std::vector<QuartetBlock> thread_qb_vec = samplingQuartetBlocks(
-                all_spaced_words, current_pattern, sequences.size(), progress,
-                thread_id, thread_num );
+                all_spaced_words, current_pattern, sequences.size(), progress, thread_id, thread_num );
 
 // reduction of the index (if necessary)
 #pragma omp critical
             {
                 if ( thread_num > 1 || pattern_set.size() > 1 )
                 {
-                    qb_vec.insert( qb_vec.end(), thread_qb_vec.begin(),
-                                   thread_qb_vec.end() );
+                    qb_vec.insert( qb_vec.end(), thread_qb_vec.begin(), thread_qb_vec.end() );
                 }
                 else
                 {
@@ -489,10 +448,8 @@ std::vector<QuartetBlock> runStandard( std::vector<Sequence> & sequences,
 std::vector<Sequence> readSequences()
 {
     auto start = std::chrono::steady_clock::now();
-    std::cout << "[Step 1 / " << num_steps << "] Reading sequences ..."
-              << std::flush;
-    std::vector<Sequence> sequences =
-        Sequence::read( mspamoptions::input_file, false );
+    std::cout << "[Step 1 / " << num_steps << "] Reading sequences ..." << std::flush;
+    std::vector<Sequence> sequences = Sequence::read( mspamoptions::input_file, false );
     if ( mspamoptions::all_sequences )
         mspamoptions::min_sequences = sequences.size();
     assert( sequences.size() < ( std::numeric_limits<uint16_t>::max )() );
@@ -500,12 +457,10 @@ std::vector<Sequence> readSequences()
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> diff = end - start;
 
-    std::cout << std::left << std::setw( left_column )
-              << ( "\r[Step 1 / " + std::to_string( num_steps ) + "] Read " +
-                   std::to_string( sequences.size() ) + " sequences" )
-              << std::fixed << std::setw( right_column ) << std::right
-              << std::setprecision( 2 ) << diff.count() << " seconds"
-              << std::endl;
+    std::cout << std::left << std::setw( left_column ) << ( "\r[Step 1 / " + std::to_string( num_steps ) + "] Read " +
+                                                            std::to_string( sequences.size() ) + " sequences" )
+              << std::fixed << std::setw( right_column ) << std::right << std::setprecision( 2 ) << diff.count()
+              << " seconds" << std::endl;
 
     return sequences;
 }
@@ -531,8 +486,7 @@ inline void initOMP()
 std::vector<Pattern> getPatternSet()
 {
     std::vector<Pattern> pattern_set;
-    variance var( mspamoptions::num_patterns, mspamoptions::weight,
-                  mspamoptions::dontcare, mspamoptions::dontcare );
+    variance var( mspamoptions::num_patterns, mspamoptions::weight, mspamoptions::dontcare, mspamoptions::dontcare );
     var.Init( true, true, true, true, false, NULL );
     var.Improve( 500 );
     for ( auto & e : var.GetPattern() )
@@ -559,8 +513,7 @@ int main( int argc, char ** argv )
     std::vector<Pattern> pattern_set = getPatternSet();
 
     std::vector<QuartetBlock> qb_vec =
-        mspamoptions::mem_save_mode ? runMemSave( sequences, pattern_set )
-                                    : runStandard( sequences, pattern_set );
+        mspamoptions::mem_save_mode ? runMemSave( sequences, pattern_set ) : runStandard( sequences, pattern_set );
     mspamstats::num_quartet_blocks = qb_vec.size();
 
     // quartet calculation using raxml

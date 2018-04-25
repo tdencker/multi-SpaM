@@ -15,14 +15,14 @@
 #ifndef RANDOMMATCHFINDER_HPP_
 #define RANDOMMATCHFINDER_HPP_
 
-// TODO:check
+#include <vector>
+
 #include "component.hpp"
 #include "options.hpp"
 #include "pattern.hpp"
 #include "quartetblock.hpp"
 #include "stats.hpp"
 #include "word.hpp"
-#include <vector>
 
 /**
 * @brief This class is used to sample QuartetBlocks at random. It will divide

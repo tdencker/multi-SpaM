@@ -40,12 +40,12 @@ class RandomMatchFinder
     QuartetBlock next( const Pattern &, int );
 
     private:
-    std::vector<Word>::iterator _vec_start;
-    std::vector<Word>::iterator _start;
-    std::vector<Word>::iterator _end;
-    std::vector<Word>::iterator _vec_end;
-    std::mt19937 _gen;
-    std::uniform_int_distribution<> _distr;
+    std::vector<Word>::iterator m_vec_start;
+    std::vector<Word>::iterator m_start;
+    std::vector<Word>::iterator m_end;
+    std::vector<Word>::iterator m_vec_end;
+    std::mt19937 m_gen;
+    std::uniform_int_distribution<> m_distr;
 };
 
 #endif

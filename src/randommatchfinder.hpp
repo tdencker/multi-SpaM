@@ -15,6 +15,7 @@
 #ifndef RANDOMMATCHFINDER_HPP_
 #define RANDOMMATCHFINDER_HPP_
 
+#include <random>
 #include <vector>
 
 #include "component.hpp"
@@ -34,16 +35,17 @@
 
 class RandomMatchFinder
 {
-  public:
+    public:
     RandomMatchFinder( std::vector<Word> &, int, int );
     QuartetBlock next( const Pattern &, int );
 
-  private:
+    private:
     std::vector<Word>::iterator _vec_start;
     std::vector<Word>::iterator _start;
     std::vector<Word>::iterator _end;
     std::vector<Word>::iterator _vec_end;
-    std::vector<char> _dummy_vec;
+    std::mt19937 _gen;
+    std::uniform_int_distribution<> _distr;
 };
 
 #endif

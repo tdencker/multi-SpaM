@@ -37,6 +37,9 @@ RandomMatchFinder::RandomMatchFinder( std::vector<Word> & sorted_array, int thre
         while ( ++_vec_end != sorted_array.end() && _vec_end->getKey() == key )
             ;
     }
+    std::random_device rd;
+	_gen = std::mt19937(rd());
+	_distr = std::uniform_int_distribution<>(0, std::distance(_vec_start, _vec_end) - 1);
 }
 
 int8_t score_mat[16] = {91, -114, -31, -123, -114, 100, -125, -31, -31, -125, 100, -114, -123, -31, -114, 91};
@@ -65,10 +68,15 @@ QuartetBlock RandomMatchFinder::next( const Pattern & p, int nbr_sequences )
     int iterations = 0;
 backup:
     bool repeat = true;
+    int i;
     while ( repeat == true )
     {
-        int x = rand() % std::distance( _vec_start, _vec_end );
-        _start = _end = _vec_start + x;
+        i = _distr(_gen);
+        _start = _end = _vec_start + i;
+        if (_start->isDummy() == true)
+        {
+            continue;
+        }
         auto key = _end->getKey();
         while ( ++_end != _vec_end && _end->getKey() == key )
             ;
@@ -76,15 +84,15 @@ backup:
             ;
         if ( _start->getKey() != key )
             _start++;
-        if ( std::count_if( _start, _end, [&]( Word & w ) { return w.getPos() != _dummy_vec.end(); } ) >= 4 )
-        {
-            repeat = false;
-        }
+        repeat = std::count_if( _start, _end, [&]( Word & w ) { return w.isDummy() == false; } ) < 4;
+
 #pragma omp atomic
         mspamstats::total_iterations++;
         if ( iterations++ > max_iterations )
             throw std::runtime_error( "maximum number of iterations reached." );
     }
+
+    i -= std::distance(_vec_start, _start);
 
     std::vector<Component> components;
     int size = std::distance( _start, _end );
@@ -94,83 +102,79 @@ backup:
         components.emplace_back( it, nbr_sequences );
     }
 
-    for ( int i = 0; i < size; ++i )
+    std::vector<int> shuf_vec(size, 0);
+    std::iota(shuf_vec.begin(), shuf_vec.end(), 0);
+    std::random_shuffle(shuf_vec.begin(), shuf_vec.end());
+
+    for (int k = 0; k < size; ++k)
     {
-        for ( int j = i + 1; j < size; ++j )
+        if (components[i].size() == mspamoptions::min_sequences)
         {
-            // Same sequences = match not possible
-            // Same component = even if score is negative, it will be in the
-            // same QuartetBlock, so no need to compute
-            if ( ( _start + i )->getSeq() == ( _start + j )->getSeq() ||
-                 &components[i].getComponent() == &components[j].getComponent() )
-            {
-                continue;
-            }
+            break;
+        }
+        int j = shuf_vec[k];
 
-            double score = 0;
-            auto pos_seq1 = ( _start + i )->getPos();
-            auto pos_seq2 = ( _start + j )->getPos();
+        // Same sequences = match not possible
+        // Same component = even if score is negative, it will be in the same pseudoalignment, so no need to compute
+        if ((_start + i)->getSeq() == (_start + j)->getSeq()
+            || &components[i].getComponent() == &components[j].getComponent())
+        {
+            continue;
+        }
 
-            // either word has previously been "removed"
-            if ( pos_seq1 == _dummy_vec.end() || pos_seq2 == _dummy_vec.end() )
-            {
-                continue;
-            }
-            const int step_seq1 = ( _start + i )->revComp() ? -1 : 1;
-            const int step_seq2 = ( _start + j )->revComp() ? -1 : 1;
-            constexpr int alphabet_size = 4;
-            for ( size_t k = 0; k < p.size();
-                  ++k, std::advance( pos_seq1, step_seq1 ), std::advance( pos_seq2, step_seq2 ) )
-            {
-                //	            if(p.isMatch(k))
-                //	            {
-                //	                continue;
-                //	            }
-                int idx = *pos_seq1 * alphabet_size + *pos_seq2;
-                score += score_mat[idx];
-            }
-            if ( score >= mspamoptions::min_score )
-            {
-                components[i].getComponent().merge( components[j].getComponent() );
-            }
-            else
-            {
+        // the word has previously been "removed"
+        if ((_start + j)->isDummy())
+        {
+            continue;
+        }
+
+        double score = 0;
+        auto pos_seq1 = ( _start + i )->getPos();
+        auto pos_seq2 = ( _start + j )->getPos();
+
+        const int step_seq1 = ( _start + i )->revComp() ? -1 : 1;
+        const int step_seq2 = ( _start + j )->revComp() ? -1 : 1;
+        constexpr int alphabet_size = 4;
+        for ( size_t l = 0; l < p.size();
+                ++l, std::advance( pos_seq1, step_seq1 ), std::advance( pos_seq2, step_seq2 ) )
+        {
+            //	            if(p.isMatch(k))
+            //	            {
+            //	                continue;
+            //	            }
+            int idx = *pos_seq1 * alphabet_size + *pos_seq2;
+            score += score_mat[idx];
+        }
+        if ( score >= mspamoptions::min_score )
+        {
+            components[i].getComponent().merge( components[j].getComponent() );
+        }
+        else
+        {
 #pragma omp atomic
-                mspamstats::random_matches++;
-            }
+            mspamstats::random_matches++;
         }
     }
-    int cnt = 0;
-    for ( auto & e : components )
-    {
-        e.removeUncertainties();
-        if ( e.size() >= mspamoptions::min_sequences )
-            cnt++;
-    }
 
-    components.erase( std::remove_if( components.begin(), components.end(),
-                                      []( Component & c ) { return c.size() < mspamoptions::min_sequences; } ),
-                      components.end() );
+    components[i].removeUncertainties();
 
     // choose component and extract 4 words
     // then return QuartetBlock and "remove" the words from the array
     // if there are no components, "remove" all words and rerun the functions to
     // check another spaced word
 
-    if ( components.size() == 0 )
+    if ( components[i].size() < mspamoptions::min_sequences )
     {
         // return next(p, nbr_sequences);
         goto backup;
     }
 
     QuartetBlock qb( p.size() );
-    int idx = rand() % components.size();
-    Component & comp = components[idx];
-    idx = rand() % ( comp.size() - 3 );
-    for ( int i = 0; i < 4; ++i )
+    Component & comp = components[i];
+    for ( size_t j = 0; j < comp.size(); ++j )
     {
-        qb.push_back( **( comp.begin() + idx + i ) );
-        **( comp.begin() + idx + i ) = Word(); // "remove" to prevent realloc
+        qb.push_back( **( comp.begin() + j ) );
+        **( comp.begin() + j ) = Word(); // "remove" to prevent realloc
     }
     return qb;
 }

@@ -42,7 +42,7 @@ std::vector<char> Word::dummy_vec;
 std::string Word::toString( unsigned length )
 {
     std::string buf;
-    buf.reserve( length );
+    buf.resize( length );
     if ( m_rev_comp )
     {
         for ( unsigned i = 0; i < length; ++i )

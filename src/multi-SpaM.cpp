@@ -93,7 +93,7 @@ void RunRAxML( std::vector<QuartetBlock> & qb_vec )
 * with the RandomMatchFinder.
 **/
 
-std::vector<QuartetBlock> samplingQuartetBlocks( std::vector<Word> & words, Pattern & current_pattern,
+std::vector<QuartetBlock> samplingQuartetBlocks( std::vector<Sequence> & sequences, std::vector<Word> & words, Pattern & current_pattern,
                                                  size_t num_sequences, unsigned & progress, int thread_id,
                                                  int thread_num, bool mem_save = false )
 {
@@ -110,6 +110,9 @@ std::vector<QuartetBlock> samplingQuartetBlocks( std::vector<Word> & words, Patt
     RandomMatchFinder rmf( words, thread_id, thread_num );
     std::vector<QuartetBlock> qb_vec;
 
+    std::ofstream out(mspamoptions::output_file);
+    assert(out.is_open());
+
     while ( progress < limit )
     {
 #pragma omp critical
@@ -119,7 +122,7 @@ std::vector<QuartetBlock> samplingQuartetBlocks( std::vector<Word> & words, Patt
 
         try
         {
-            qb_vec.push_back( rmf.next( current_pattern, num_sequences ) );
+            qb_vec.push_back( rmf.next( out, sequences, current_pattern, num_sequences ) );
         }
         catch ( const std::exception & e )
         {
@@ -365,7 +368,7 @@ std::vector<QuartetBlock> runMemSave( std::vector<Sequence> & sequences, std::ve
 #endif
 
                 std::vector<QuartetBlock> thread_qb_vec = samplingQuartetBlocks(
-                    all_spaced_words, current_pattern, sequences.size(), progress, thread_id, thread_num, true );
+                    sequences, all_spaced_words, current_pattern, sequences.size(), progress, thread_id, thread_num, true );
 
 // reduction of the index (if necessary)
 #pragma omp critical
@@ -421,7 +424,7 @@ std::vector<QuartetBlock> runStandard( std::vector<Sequence> & sequences, std::v
 #endif
 
             std::vector<QuartetBlock> thread_qb_vec = samplingQuartetBlocks(
-                all_spaced_words, current_pattern, sequences.size(), progress, thread_id, thread_num );
+                sequences, all_spaced_words, current_pattern, sequences.size(), progress, thread_id, thread_num );
 
 // reduction of the index (if necessary)
 #pragma omp critical
@@ -518,7 +521,7 @@ int main( int argc, char ** argv )
 
     // quartet calculation using raxml
 
-    RunRAxML( qb_vec );
+    //RunRAxML( qb_vec );
 
     if ( mspamoptions::show_stats == true )
         mspamstats::printStats();

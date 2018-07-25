@@ -173,12 +173,16 @@ backup:
     Component & comp = components[i];
     for ( size_t j = 0; j < comp.size(); ++j )
     {
+#pragma omp critical
+{
         out << ">" << sequences[(**(comp.begin() + j)).getSeq()].id << std::endl;
         out << (**(comp.begin() + j)).toString(p.size()) << std::endl;
+}
 
         qb.push_back( **( comp.begin() + j ) );
         **( comp.begin() + j ) = Word(); // "remove" to prevent realloc
     }
+#pragma omp critical
     out << std::endl << std::endl;
     return qb;
 }

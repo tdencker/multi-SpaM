@@ -60,7 +60,7 @@ constexpr int max_iterations = 10000;
 * with the initial word.
 **/
 
-QuartetBlock RandomMatchFinder::next( std::ostream & out, std::vector<Sequence> & sequences, const Pattern & p, int nbr_sequences )
+QuartetBlock RandomMatchFinder::next( std::vector<Sequence> & sequences, const Pattern & p, int nbr_sequences )
 {
     // choose a spaced word in the array
     // set m_start and m_end accordingly
@@ -171,18 +171,11 @@ backup:
 
     QuartetBlock qb( p.size() );
     Component & comp = components[i];
+
     for ( size_t j = 0; j < comp.size(); ++j )
     {
-#pragma omp critical
-{
-        out << ">" << sequences[(**(comp.begin() + j)).getSeq()].id << std::endl;
-        out << (**(comp.begin() + j)).toString(p.size()) << std::endl;
-}
-
         qb.push_back( **( comp.begin() + j ) );
         **( comp.begin() + j ) = Word(); // "remove" to prevent realloc
     }
-#pragma omp critical
-    out << std::endl << std::endl;
     return qb;
 }

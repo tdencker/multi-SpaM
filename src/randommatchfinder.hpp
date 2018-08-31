@@ -37,7 +37,7 @@ class RandomMatchFinder
 {
     public:
     RandomMatchFinder( std::vector<Word> &, int, int );
-    QuartetBlock next( std::ostream &, std::vector<Sequence> &, const Pattern &, int );
+    QuartetBlock next( std::vector<Sequence> &, const Pattern &, int );
 
     private:
     std::vector<Word>::iterator m_vec_start;

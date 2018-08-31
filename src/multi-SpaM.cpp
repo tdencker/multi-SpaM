@@ -54,6 +54,21 @@ constexpr int num_buckets = 256;
 constexpr int left_column = 40;
 constexpr int right_column = 13;
 
+void printQuartets( std::vector<QuartetBlock> & qb_vec, unsigned length)
+{
+    std::ofstream out_file( mspamoptions::output_file );
+    assert( out_file.is_open() );
+    for(auto & quartet : qb_vec)
+    {
+        for(auto & w_it : quartet)
+        {
+            out_file << ">" << w_it.getSeq() << std::endl;
+            out_file << w_it.toString(length) << std::endl;
+        }
+        out_file << std::endl << std::endl;
+    }
+}
+
 /**
 * @brief Runs RAxML and writes the resulting quartet trees in the outfile. For
 * more detail, see raxmlwrapper.hpp.
@@ -110,9 +125,6 @@ std::vector<QuartetBlock> samplingQuartetBlocks( std::vector<Sequence> & sequenc
     RandomMatchFinder rmf( words, thread_id, thread_num );
     std::vector<QuartetBlock> qb_vec;
 
-    std::ofstream out(mspamoptions::output_file);
-    assert(out.is_open());
-
     while ( progress < limit )
     {
 #pragma omp critical
@@ -122,7 +134,7 @@ std::vector<QuartetBlock> samplingQuartetBlocks( std::vector<Sequence> & sequenc
 
         try
         {
-            qb_vec.push_back( rmf.next( out, sequences, current_pattern, num_sequences ) );
+            qb_vec.push_back( rmf.next( sequences, current_pattern, num_sequences ) );
         }
         catch ( const std::exception & e )
         {
@@ -522,6 +534,8 @@ int main( int argc, char ** argv )
     // quartet calculation using raxml
 
     //RunRAxML( qb_vec );
+
+    printQuartets( qb_vec, pattern_set[0].size() );
 
     if ( mspamoptions::show_stats == true )
         mspamstats::printStats();

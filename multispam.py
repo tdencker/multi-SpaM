@@ -33,8 +33,9 @@ def build_opts():
 
 	return parser.parse_args()
 
-def build_arg_list(opts, tmp_file):
-	argl = ["./bin/multi-SpaM"]
+def build_arg_list(opts, base_dir, tmp_file):
+	import os
+	argl = [os.path.join(base_dir, "bin/multi-SpaM")]
 	if opts.m == True:
 		argl.append("--mem-save")
 	del opts.m
@@ -81,20 +82,22 @@ if __name__ == "__main__":
 		raise Exception("Multi-SpaM currently works only on 64-bit linux!")
 	opts = build_opts()
 
+	base_dir = os.path.dirname(__file__)
+
 	try:
-		open("./bin/multi-SpaM").close()
+		open(os.path.join(base_dir, "bin/multi-SpaM")).close()
 	except IOError:
 		raise Exception("Multi-SpaM was not installed yet. Run \"make\", then run the script again.")
 	
 	quartet_file = id + ".quartets"
-	argl = build_arg_list(opts, quartet_file)
+	argl = build_arg_list(opts, base_dir, quartet_file)
 
 	sp.check_call(argl)
 
 	id_map = build_id_map(opts.i)
 	id_tree_file = id + ".tree"
 
-	sp.check_call(["./bin/max-cut-tree", "qrtt=" + quartet_file, "weights=off", "otre=" + id_tree_file])
+	sp.check_call([os.path.join(base_dir, "bin/max-cut-tree"), "qrtt=" + quartet_file, "weights=off", "otre=" + id_tree_file])
 
 	fix_tree(id_tree_file, id_map, opts.o)
 

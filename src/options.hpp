@@ -36,6 +36,7 @@ extern std::string output_file;
 extern bool all_sequences;
 extern bool mem_save_mode;
 extern bool show_stats;
+extern bool print_only;
 void parseParameters( int argc, char * argv[] );
 void printParameters();
 }

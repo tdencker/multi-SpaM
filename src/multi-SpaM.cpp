@@ -54,7 +54,7 @@ constexpr int num_buckets = 256;
 constexpr int left_column = 40;
 constexpr int right_column = 13;
 
-void printQuartets( std::vector<QuartetBlock> & qb_vec, unsigned length)
+void printQuartets( std::vector<Sequence> & sequences, std::vector<QuartetBlock> & qb_vec, unsigned length)
 {
     std::ofstream out_file( mspamoptions::output_file );
     assert( out_file.is_open() );
@@ -62,7 +62,7 @@ void printQuartets( std::vector<QuartetBlock> & qb_vec, unsigned length)
     {
         for(auto & w_it : quartet)
         {
-            out_file << ">" << w_it.getSeq() << std::endl;
+            out_file << ">" << sequences[w_it.getSeq()].id << std::endl;
             out_file << w_it.toString(length) << std::endl;
         }
         out_file << std::endl << std::endl;
@@ -533,9 +533,13 @@ int main( int argc, char ** argv )
 
     // quartet calculation using raxml
 
-    //RunRAxML( qb_vec );
-
-    printQuartets( qb_vec, pattern_set[0].size() );
+    if ( mspamoptions::print_only == true)
+    {
+        printQuartets( sequences, qb_vec, pattern_set[0].size() );
+    } else 
+    {
+        RunRAxML( qb_vec );
+    }
 
     if ( mspamoptions::show_stats == true )
         mspamstats::printStats();

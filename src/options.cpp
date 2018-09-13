@@ -29,6 +29,7 @@ std::string output_file = "outfile";
 bool all_sequences = false;
 bool mem_save_mode = false;
 bool show_stats = false;
+bool print_only = false;
 
 void printHelp()
 {
@@ -55,7 +56,8 @@ void printHelp()
               << "-t <int>            number of threads (default: 1)" << std::endl
               << "--mem-save          memory saving mode (default: False)" << std::endl
               << "--show-stats        additional stats (mostly for debugging) "
-                 "(default: False)"
+                 "(default: False)" << std::endl
+              << "--print-only        print quartet blocks instead of using raxml"
               << std::endl
               << "-v, --version       show program's version number and exit" << std::endl;
 }
@@ -90,6 +92,7 @@ void parseParameters( int argc, char * argv[] )
                                     {"num-patterns", required_argument, nullptr, 'p'},
                                     {"num-samples", required_argument, nullptr, 'n'},
                                     {"min-score", required_argument, nullptr, 's'},
+                                    {"print-only", no_argument, nullptr, 0},
                                     {nullptr, 0, nullptr, 0}};
 
     while ( 1 )
@@ -163,8 +166,10 @@ void parseParameters( int argc, char * argv[] )
         case 0:
             if ( long_options[option_index].name == std::string( "mem-save" ) )
                 mem_save_mode = true;
-            else
+            else if ( long_options[option_index].name == std::string( "show-stats" ) )
                 show_stats = true;
+            else
+                print_only = true;
             break;
         case 'h':
             printHelp();

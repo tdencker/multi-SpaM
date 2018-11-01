@@ -60,7 +60,7 @@ constexpr int max_iterations = 10000;
 * with the initial word.
 **/
 
-QuartetBlock RandomMatchFinder::next( std::vector<Sequence> & sequences, const Pattern & p, int nbr_sequences )
+QuartetBlock RandomMatchFinder::next( const Pattern & p, int nbr_sequences )
 {
     // choose a spaced word in the array
     // set m_start and m_end accordingly

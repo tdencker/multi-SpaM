@@ -108,7 +108,7 @@ void RunRAxML( std::vector<QuartetBlock> & qb_vec )
 * with the RandomMatchFinder.
 **/
 
-std::vector<QuartetBlock> samplingQuartetBlocks( std::vector<Sequence> & sequences, std::vector<Word> & words, Pattern & current_pattern,
+std::vector<QuartetBlock> samplingQuartetBlocks( std::vector<Word> & words, Pattern & current_pattern,
                                                  size_t num_sequences, unsigned & progress, int thread_id,
                                                  int thread_num, bool mem_save = false )
 {
@@ -134,7 +134,7 @@ std::vector<QuartetBlock> samplingQuartetBlocks( std::vector<Sequence> & sequenc
 
         try
         {
-            qb_vec.push_back( rmf.next( sequences, current_pattern, num_sequences ) );
+            qb_vec.push_back( rmf.next( current_pattern, num_sequences ) );
         }
         catch ( const std::exception & e )
         {
@@ -380,7 +380,7 @@ std::vector<QuartetBlock> runMemSave( std::vector<Sequence> & sequences, std::ve
 #endif
 
                 std::vector<QuartetBlock> thread_qb_vec = samplingQuartetBlocks(
-                    sequences, all_spaced_words, current_pattern, sequences.size(), progress, thread_id, thread_num, true );
+                    all_spaced_words, current_pattern, sequences.size(), progress, thread_id, thread_num, true );
 
 // reduction of the index (if necessary)
 #pragma omp critical
@@ -436,7 +436,7 @@ std::vector<QuartetBlock> runStandard( std::vector<Sequence> & sequences, std::v
 #endif
 
             std::vector<QuartetBlock> thread_qb_vec = samplingQuartetBlocks(
-                sequences, all_spaced_words, current_pattern, sequences.size(), progress, thread_id, thread_num );
+                all_spaced_words, current_pattern, sequences.size(), progress, thread_id, thread_num );
 
 // reduction of the index (if necessary)
 #pragma omp critical

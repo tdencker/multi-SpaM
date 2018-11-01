@@ -62,7 +62,7 @@ void printQuartets( std::vector<Sequence> & sequences, std::vector<QuartetBlock>
     {
         for(auto & w_it : quartet)
         {
-            out_file << ">" << sequences[w_it.getSeq()].id << std::endl;
+            out_file << ">" << sequences[w_it.getSeq()].id << " (Pos: " << std::distance(sequences[w_it.getSeq()].content.begin(), w_it.getPos()) << ")" << std::endl;
             out_file << w_it.toString(length) << std::endl;
         }
         out_file << std::endl << std::endl;

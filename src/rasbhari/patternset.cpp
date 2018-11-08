@@ -25,7 +25,12 @@
 #include "patternset.h"
 
 /*---Variables---------------------------------------------------------------*/
-std::default_random_engine generator( std::random_device{}() ); // time(0)
+std::mt19937_64 generator( std::random_device{}() ); // time(0)
+
+void setRasbhariSeed(uint64_t seed)
+{
+    generator = std::mt19937_64(seed);
+}
 
 /*===Main-Part===============================================================*/
 /*---Constructor-------------------------------------------------------------*/

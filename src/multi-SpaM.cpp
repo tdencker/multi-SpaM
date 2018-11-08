@@ -500,6 +500,7 @@ inline void initOMP()
 // TODO: use newer version of rasbhari
 std::vector<Pattern> getPatternSet()
 {
+    setRasbhariSeed(0);
     std::vector<Pattern> pattern_set;
     variance var( mspamoptions::num_patterns, mspamoptions::weight, mspamoptions::dontcare, mspamoptions::dontcare );
     var.Init( true, true, true, true, false, NULL );
@@ -507,6 +508,7 @@ std::vector<Pattern> getPatternSet()
     for ( auto & e : var.GetPattern() )
     {
         std::string str( e.begin(), e.end() );
+        std::cout << str << std::endl;
         pattern_set.emplace_back( str );
     }
     return pattern_set;

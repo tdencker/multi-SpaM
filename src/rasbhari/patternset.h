@@ -29,6 +29,8 @@
 #include <vector>
 #include <random>
 
+void setRasbhariSeed(uint64_t seed);
+
 class patternset{
 public:
 	patternset();

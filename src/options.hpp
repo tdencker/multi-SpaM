@@ -31,12 +31,14 @@ extern int min_score;
 extern unsigned min_sequences;
 extern int num_threads;
 extern unsigned num_samples;
+extern uint64_t seed;
 extern std::string input_file;
 extern std::string output_file;
 extern bool all_sequences;
 extern bool mem_save_mode;
 extern bool show_stats;
 extern bool print_only;
+extern bool use_seed;
 void parseParameters( int argc, char * argv[] );
 void printParameters();
 }

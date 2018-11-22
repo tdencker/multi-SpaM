@@ -23,6 +23,7 @@ unsigned symbol_bits = 2;
 int min_score = 0;
 unsigned min_sequences = 4;
 unsigned num_samples = 1000000;
+uint64_t seed = 12345;
 int num_threads = 1;
 std::string input_file = "";
 std::string output_file = "outfile";
@@ -30,6 +31,7 @@ bool all_sequences = false;
 bool mem_save_mode = false;
 bool show_stats = false;
 bool print_only = false;
+bool use_seed = false;
 
 void printHelp()
 {
@@ -91,7 +93,8 @@ void parseParameters( int argc, char * argv[] )
                                     {"min-sequences", required_argument, nullptr, 'm'},
                                     {"num-patterns", required_argument, nullptr, 'p'},
                                     {"num-samples", required_argument, nullptr, 'n'},
-                                    {"min-score", required_argument, nullptr, 's'},
+                                    {"seed", required_argument, nullptr, 's'},
+                                    {"min-score", required_argument, nullptr, 0},
                                     {"print-only", no_argument, nullptr, 0},
                                     {nullptr, 0, nullptr, 0}};
 
@@ -153,7 +156,8 @@ void parseParameters( int argc, char * argv[] )
             mspamoptions::input_file = optarg;
             break;
         case 's':
-            mspamoptions::min_score = std::atoi( optarg );
+            seed = std::atoll(optarg);
+            use_seed = true;
             break;
         case 'm':
             mspamoptions::min_sequences = std::atoi( optarg );
@@ -168,8 +172,10 @@ void parseParameters( int argc, char * argv[] )
                 mem_save_mode = true;
             else if ( long_options[option_index].name == std::string( "show-stats" ) )
                 show_stats = true;
-            else
+            else if ( long_options[option_index].name == std::string( "print-only" ) )
                 print_only = true;
+            else
+                mspamoptions::min_score = std::atoi( optarg );
             break;
         case 'h':
             printHelp();

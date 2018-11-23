@@ -1,6 +1,8 @@
 add_subdirectory(rasbhari)
 add_subdirectory(raxml)
 
+# TODO: linux and sse3 is required
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 
 add_executable(multi-SpaM

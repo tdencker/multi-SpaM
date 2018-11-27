@@ -511,7 +511,6 @@ std::vector<Pattern> getPatternSet()
     for ( auto & e : var.GetPattern() )
     {
         std::string str( e.begin(), e.end() );
-        std::cout << str << std::endl;
         pattern_set.emplace_back( str );
     }
     return pattern_set;

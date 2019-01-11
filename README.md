@@ -2,7 +2,9 @@
 
 `Multi-SpaM` is a program to infer phylogenies for a set of genomes. It is based on 4-sets of spaced words that are highly likely to represent true homologies. These blocks are evaluated with the Maximum-Likelihood method `RAxML` and the resulting trees of 4 sequences, or quartet trees, are amalgamated into a supertree (using the `Quartet MaxCut` tool). Since the number of blocks used is limited, it is suitable even for large datasets.
 
-All information around installation and standard usage can be found in this readme.
+Additional information can be found in our [paper](https://arxiv.org/abs/1803.09222). The paper has been published at the [RECOMB-CG](https://doi.org/10.1007/978-3-030-00834-5_13):
+
+Dencker T., Leimeister CA., Gerth M., Bleidorn C., Snir S., Morgenstern B. (2018) Multi-SpaM: A Maximum-Likelihood Approach to Phylogeny Reconstruction Using Multiple Spaced-Word Matches and Quartet Trees. In: Blanchette M., Ouangraoua A. (eds) Comparative Genomics. RECOMB-CG 2018. Lecture Notes in Computer Science, vol 11183. Springer, Cham
 
 # Installation and Usage
 
@@ -37,10 +39,6 @@ where the input file is a FASTA file containing multiple genomes. The output fil
 - In case of large input files, it is recommended to increase the weight to 12 or even higher. 
 - Also, if you have rather limited RAM, you can use the memory save mode. For input files larger than 200 mb or so, the required RAM will exceed 8 gb. With the memory saving mode, the RAM requirement could be reduced to 10.5 gb for a 4.8 gb dataset (doubling the runtime). 
 - The number of sampled blocks doesn't have to be increased unless (potentially) for very large datasets.
-
-## Additional Resources
-
-Additional information can be found in our [paper](https://arxiv.org/abs/1803.09222).
 
 ## License
 

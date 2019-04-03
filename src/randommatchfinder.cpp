@@ -37,8 +37,14 @@ RandomMatchFinder::RandomMatchFinder( std::vector<Word> & sorted_array, int thre
         while ( ++m_vec_end != sorted_array.end() && m_vec_end->getKey() == key )
             ;
     }
-    std::random_device rd;
-	m_gen = std::mt19937(rd());
+    if(mspamoptions::use_seed == true)
+    {
+        m_gen = std::mt19937(mspamoptions::seed + thread_id);
+    }else
+    {
+        std::random_device rd;
+	    m_gen = std::mt19937(rd());
+    }
 	m_distr = std::uniform_int_distribution<>(0, std::distance(m_vec_start, m_vec_end) - 1);
 }
 
@@ -104,7 +110,7 @@ backup:
 
     std::vector<int> shuf_vec(size, 0);
     std::iota(shuf_vec.begin(), shuf_vec.end(), 0);
-    std::random_shuffle(shuf_vec.begin(), shuf_vec.end());
+    std::shuffle(shuf_vec.begin(), shuf_vec.end(), m_gen);
 
     for (int k = 0; k < size; ++k)
     {

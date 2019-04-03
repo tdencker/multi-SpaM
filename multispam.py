@@ -9,6 +9,8 @@
 # General Public License for more details at
 # http://www.gnu.org/copyleft/gpl.html
 
+from __future__ import print_function
+
 def check_positive(value):
 	import argparse
 	ivalue = int(value)
@@ -27,8 +29,9 @@ def build_opts():
 	parser.add_argument('-d', metavar='<int>', type=check_positive, help='number of don\'t care positions in the pattern', default=100)
 	parser.add_argument('-n', metavar='<int>', type=check_positive, help='number of sampled quartet blocks', default=1000000)
 	parser.add_argument('-t', metavar='<int>', type=check_positive, help='number of threads', default=1)
+	parser.add_argument('-s', '--seed', metavar='<int>', type=check_positive, dest = 's', help='seed')
 	parser.add_argument('--mem-save', help='memory saving mode', dest='m', action='store_true')
-	parser.add_argument('--show-stats', help='additional stats (mostly for debugging)', dest='s', action='store_true')
+	parser.add_argument('--show-stats', help='additional stats (mostly for debugging)', dest='x', action='store_true')
 	parser.add_argument('--bootstrap', help='do bootstrapping', dest='b', action='store_true')
 	parser.add_argument('-v', '--version', action='version', version='Multi-SpaM 1.0')
 
@@ -40,11 +43,13 @@ def build_arg_list(opts, base_dir, tmp_file):
 	if opts.m == True:
 		argl.append('--mem-save')
 	del opts.m
-	if opts.s == True:
+	if opts.x == True:
 		argl.append('--show-stats')
-	del opts.s
+	del opts.x
 	for opt in vars(opts):
 		if opt == 'b':
+			continue
+		if getattr(opts, opt) == None:
 			continue
 		argl.append('-' + opt)
 		argl.append(str(getattr(opts,opt)))

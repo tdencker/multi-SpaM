@@ -125,7 +125,8 @@ std::vector<QuartetBlock> samplingQuartetBlocks( std::vector<Word> & words, Patt
     RandomMatchFinder rmf( words, thread_id, thread_num );
     std::vector<QuartetBlock> qb_vec;
 
-    while ( progress < limit )
+    size_t local_progress = 0;
+    while ( local_progress < (limit/thread_num) )
     {
 #pragma omp critical
         if ( mem_save == false && progress % 100 == 0 )
@@ -141,6 +142,7 @@ std::vector<QuartetBlock> samplingQuartetBlocks( std::vector<Word> & words, Patt
             break;
         }
 
+        local_progress++;
 #pragma omp atomic
         progress++;
     }

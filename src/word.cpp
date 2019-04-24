@@ -108,7 +108,8 @@ Word::Word( Pattern & p, std::vector<char>::iterator it, int16_t seq, bool rev_c
 
         if ( nuc == ( std::numeric_limits<char>::max )() )
         {
-            throw std::exception(); // illegal character
+            m_pos = dummy_vec.begin();// illegal character
+            return;
         }
 
         if ( m_rev_comp )

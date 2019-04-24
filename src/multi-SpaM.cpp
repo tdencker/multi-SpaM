@@ -226,13 +226,7 @@ std::vector<Word> createSpacedWordsMemSave( std::vector<Sequence> & sequences, P
             {
                 continue;
             }
-            try
-            {
-                localWords.push_back( Word( current_pattern, it, i, false ) );
-            }
-            catch ( std::exception & e )
-            {
-            }
+            localWords.push_back( Word( current_pattern, it, i, false ) );
         }
         if ( compute_rev_comp == true )
         {
@@ -260,13 +254,7 @@ std::vector<Word> createSpacedWordsMemSave( std::vector<Sequence> & sequences, P
                 {
                     continue;
                 }
-                try
-                {
-                    localWords.push_back( Word( current_pattern, it, i, true ) );
-                }
-                catch ( std::exception & e )
-                {
-                }
+                localWords.push_back( Word( current_pattern, it, i, true ) );
             }
         }
 #pragma omp critical
@@ -311,25 +299,13 @@ std::vector<Word> createSpacedWords( std::vector<Sequence> & sequences, Pattern 
         auto & seq = sequences[i].content;
         for ( auto it = seq.begin(); it != seq.end() - current_pattern.size() + 1; ++it )
         {
-            try
-            {
-                words[start_points[i]++] = Word( current_pattern, it, i, false );
-            }
-            catch ( std::exception & e )
-            {
-            }
+            words[start_points[i]++] = Word( current_pattern, it, i, false );
         }
         if ( compute_rev_comp == true )
         {
             for ( auto it = seq.end() - 1; it != seq.begin() + current_pattern.size() - 2; --it )
             {
-                try
-                {
-                    words[start_points[i]++] = Word( current_pattern, it, i, true );
-                }
-                catch ( std::exception & e )
-                {
-                }
+                words[start_points[i]++] = Word( current_pattern, it, i, true );
             }
         }
 #pragma omp critical

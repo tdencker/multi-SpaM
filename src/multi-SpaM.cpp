@@ -434,7 +434,11 @@ std::vector<QuartetBlock> runStandard( std::vector<Sequence> & sequences, std::v
             } // end of critical
         }     // end of parallel
     }
-    assert( qb_vec.size() > 0 );
+    if(qb_vec.size() == 0)
+    {
+        std::cerr << "No quartetblocks could be found!" << std::endl;
+        exit(-1);
+    }
     return qb_vec;
 }
 
@@ -450,7 +454,11 @@ std::vector<Sequence> readSequences()
     if ( mspamoptions::all_sequences )
         mspamoptions::min_sequences = sequences.size();
     assert( sequences.size() < ( std::numeric_limits<uint16_t>::max )() );
-    assert( sequences.size() >= mspamoptions::min_sequences );
+    if(sequences.size() < mspamoptions::min_sequences)
+    {
+        std::cerr << "Only " << sequences.size() << " sequences were found. At least " << mspamoptions::min_sequences << " are necessary for multi-SpaM to run." << std::endl;
+        exit(-1);
+    }
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> diff = end - start;
 

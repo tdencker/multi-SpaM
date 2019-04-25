@@ -281,16 +281,11 @@ std::vector<Word> createSpacedWords( std::vector<Sequence> & sequences, Pattern 
     int factor = compute_rev_comp ? 2 : 1;
     for ( unsigned i = 1; i < sequences.size(); ++i )
     {
-        if(sequences[i].content.size() < current_pattern.size())
-        {
-            start_points[i] = start_points[i - 1];
-            continue;
-        }
-        start_points[i] =
-            start_points[i - 1] + ( sequences[i - 1].content.size() - current_pattern.size() + 1 ) * factor;
+        size_t effective_size = sequences[i-1].content.size() > current_pattern.size() ? ( sequences[i - 1].content.size() - current_pattern.size() + 1 ) : 0;
+        start_points[i] = start_points[i - 1] + effective_size * factor;
     }
-    size_t size =
-        start_points[sequences.size() - 1] + ( sequences.back().content.size() - current_pattern.size() + 1 ) * factor;
+    size_t effective_size = sequences.back().content.size() > current_pattern.size() ? ( sequences.back().content.size() - current_pattern.size() + 1 ) : 0;
+    size_t size = start_points[sequences.size() - 1] + effective_size * factor;
     std::vector<Word> words;
     words.resize( size );
     int finished_sequences = 0;

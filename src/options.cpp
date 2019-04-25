@@ -32,6 +32,7 @@ bool mem_save_mode = false;
 bool show_stats = false;
 bool print_only = false;
 bool use_seed = false;
+bool use_rev_comp = true;
 
 void printHelp()
 {
@@ -60,6 +61,8 @@ void printHelp()
               << "--show-stats        additional stats (mostly for debugging) "
                  "(default: False)" << std::endl
               << "--print-only        print quartet blocks instead of using raxml"
+              << std::endl
+              << "--no-rev-comp       do not use reverse complement"
               << std::endl
               << "-v, --version       show program's version number and exit" << std::endl;
 }
@@ -96,6 +99,7 @@ void parseParameters( int argc, char * argv[] )
                                     {"seed", required_argument, nullptr, 's'},
                                     {"min-score", required_argument, nullptr, 0},
                                     {"print-only", no_argument, nullptr, 0},
+                                    {"no-rev-comp", no_argument, nullptr, 0},
                                     {nullptr, 0, nullptr, 0}};
 
     while ( 1 )
@@ -174,6 +178,8 @@ void parseParameters( int argc, char * argv[] )
                 show_stats = true;
             else if ( long_options[option_index].name == std::string( "print-only" ) )
                 print_only = true;
+                else if ( long_options[option_index].name == std::string( "no-rev-comp" ) )
+                use_rev_comp = false;
             else
                 mspamoptions::min_score = std::atoi( optarg );
             break;

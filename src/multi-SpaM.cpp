@@ -273,7 +273,7 @@ std::vector<Word> createSpacedWordsMemSave( std::vector<Sequence> & sequences, P
 **/
 
 std::vector<Word> createSpacedWords( std::vector<Sequence> & sequences, Pattern & current_pattern,
-                                     bool compute_rev_comp = true )
+                                     bool compute_rev_comp = mspamoptions::use_rev_comp )
 {
     auto start = std::chrono::steady_clock::now();
     std::vector<size_t> start_points( sequences.size() );
@@ -281,6 +281,11 @@ std::vector<Word> createSpacedWords( std::vector<Sequence> & sequences, Pattern 
     int factor = compute_rev_comp ? 2 : 1;
     for ( unsigned i = 1; i < sequences.size(); ++i )
     {
+        if(sequences[i].content.size() < current_pattern.size())
+        {
+            start_points[i] = start_points[i - 1];
+            continue;
+        }
         start_points[i] =
             start_points[i - 1] + ( sequences[i - 1].content.size() - current_pattern.size() + 1 ) * factor;
     }
@@ -297,6 +302,10 @@ std::vector<Word> createSpacedWords( std::vector<Sequence> & sequences, Pattern 
     for ( int i = 0; i < (int) sequences.size(); ++i )
     {
         auto & seq = sequences[i].content;
+        if(seq.size() < current_pattern.size())
+        {
+            continue;
+        }
         for ( auto it = seq.begin(); it != seq.end() - current_pattern.size() + 1; ++it )
         {
             words[start_points[i]++] = Word( current_pattern, it, i, false );

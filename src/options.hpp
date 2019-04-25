@@ -39,6 +39,7 @@ extern bool mem_save_mode;
 extern bool show_stats;
 extern bool print_only;
 extern bool use_seed;
+extern bool use_rev_comp;
 void parseParameters( int argc, char * argv[] );
 void printParameters();
 }

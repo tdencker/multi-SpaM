@@ -44,7 +44,7 @@ class RandomMatchFinder
     std::vector<Word>::iterator m_start;
     std::vector<Word>::iterator m_end;
     std::vector<Word>::iterator m_vec_end;
-    std::mt19937 m_gen;
+    std::mt19937_64 m_gen;
     std::uniform_int_distribution<> m_distr;
 };
 

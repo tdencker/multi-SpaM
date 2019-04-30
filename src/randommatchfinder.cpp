@@ -39,11 +39,11 @@ RandomMatchFinder::RandomMatchFinder( std::vector<Word> & sorted_array, int thre
     }
     if(mspamoptions::use_seed == true)
     {
-        m_gen = std::mt19937(mspamoptions::seed + thread_id);
+        m_gen = std::mt19937_64(mspamoptions::seed + thread_id);
     }else
     {
         std::random_device rd;
-	    m_gen = std::mt19937(rd());
+	    m_gen = std::mt19937_64(rd());
     }
 	m_distr = std::uniform_int_distribution<>(0, std::distance(m_vec_start, m_vec_end) - 1);
 }

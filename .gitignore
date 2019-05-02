@@ -11,3 +11,4 @@ test.fasta
 /.vs/
 /.vscode/
 build
+/bin/consense
